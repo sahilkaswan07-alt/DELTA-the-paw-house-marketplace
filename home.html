@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Δ Delta — Paw House Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">Δ Delta</a>
+    <ul class="nav-links">
+      <li><a href="home.html"><span class="nav-text">Home</span></a></li>
+      <li><a href="home.html"><span class="nav-text">Marketplace</span></a></li>
+      <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="postpet.html"><span class="nav-text">Sell</span></a></li>
+      <li><a href="landing.html" class="nav-cta">Register</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO / SEARCH -->
+  <section class="delta-hero">
+    <div class="premium-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
+      Delta Marketplace
+    </div>
+    <h1 class="brand">Δ DELTA</h1>
+    <p class="tagline">The Paw House Marketplace — Buy • Sell</p>
+
+    <div class="search-wrap">
+      <input type="text" class="search-bar" id="searchInput" placeholder="🔍 Search pets...">
+    </div>
+
+    <div class="filters">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="dog">Dogs</button>
+      <button class="filter-chip" data-filter="cat">Cats</button>
+    </div>
+  </section>
+
+  <!-- LISTINGS -->
+  <section class="pets-section" id="listings">
+    <div class="sec-head">
+      <h2>Latest Listings 🐾</h2>
+      <p>Fresh pets looking for their forever home.</p>
+    </div>
+
+    <div class="pets-grid" id="listingGrid">
+      <!-- cards are rendered here by JS from DeltaStore -->
+      <div class="pets-empty" id="emptyState" style="display:none;">
+        No pets match your search — try a different breed or filter.
+      </div>
+    </div>
+  </section>
+
+  <a href="postpet.html" class="post-pet-fab">+ Post Pet</a>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
+  <script src="firebaseconfig.js"></script>
+  <script src="cloudinaryconfig.js"></script>
+  <script src="data.js"></script>
+<script>
+  /* ===== BACKGROUND CANVAS (unchanged) ===== */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const FOCAL = 560;
+  const COLS = [[244,162,77],[224,123,123],[201,111,208],[100,160,255]];
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function mkRing(i){ const col=COLS[i%COLS.length]; return {radius:180+i*70,tilt:(i*0.6)+Math.random()*0.4,spin:(Math.random()-.5)*0.012+0.004,rot:Math.random()*Math.PI*2,points:64,col,nodeOffset:Math.random()*Math.PI*2}; }
+  let rings=[];
+  function init(){ rings=Array.from({length:6},(_,i)=>mkRing(i)); }
+  let mouse={tx:0,ty:0.25}, camRotY=0, camRotX=0.25;
+  function project3D(x,y,z){ const cosY=Math.cos(camRotY),sinY=Math.sin(camRotY); let x1=x*cosY-z*sinY,z1=x*sinY+z*cosY; const cosX=Math.cos(camRotX),sinX=Math.sin(camRotX); let y1=y*cosX-z1*sinX,z2=y*sinX+z1*cosX; const scale=FOCAL/(FOCAL+z2+500); return{sx:W*.5+x1*scale,sy:H*.5+y1*scale,scale,z:z2}; }
+  function drawBlobs(t){ [{cx:W*.30+Math.sin(t*.30)*110,cy:H*.42+Math.cos(t*.20)*75,r:320,col:'244,162,77',a:.07},{cx:W*.72+Math.cos(t*.25)*90,cy:H*.60+Math.sin(t*.32)*65,r:250,col:'201,111,208',a:.07},{cx:W*.52+Math.sin(t*.18)*70,cy:H*.24+Math.cos(t*.22)*55,r:190,col:'100,160,255',a:.05}].forEach(({cx,cy,r,col,a})=>{ const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,`rgba(${col},${a})`); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }); }
+  function drawVignette(){ const g=ctx.createRadialGradient(W/2,H/2,H*.06,W/2,H/2,H*.80); g.addColorStop(0,'rgba(13,15,20,0)'); g.addColorStop(1,'rgba(13,15,20,.85)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+  let t=0;
+  function animate(){ requestAnimationFrame(animate); t+=.007; camRotY+=(mouse.tx-camRotY)*.02; camRotX+=(mouse.ty-camRotX)*.02; ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H); drawBlobs(t); const drawables=[]; rings.forEach(ring=>{ ring.rot+=ring.spin; const pts=[]; for(let p=0;p<=ring.points;p++){ const a=(p/ring.points)*Math.PI*2; const rx=Math.cos(a)*ring.radius,ry=Math.sin(a)*ring.radius*Math.sin(ring.tilt),rz=Math.sin(a)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); pts.push(project3D(rx*cs-rz*sn,ry,rx*sn+rz*cs)); } const avgZ=pts.reduce((s,p)=>s+p.z,0)/pts.length; drawables.push({ring,pts,avgZ}); const na=ring.nodeOffset+t*1.3; const nrx=Math.cos(na)*ring.radius,nry=Math.sin(na)*ring.radius*Math.sin(ring.tilt),nrz=Math.sin(na)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); const node=project3D(nrx*cs-nrz*sn,nry,nrx*sn+nrz*cs); drawables.push({node,ring,avgZ:node.z,isNode:true}); }); drawables.sort((a,b)=>a.avgZ-b.avgZ); drawables.forEach(d=>{ if(d.isNode){ const{node,ring}=d; const depth=Math.max(0,Math.min(1,(node.z+500)/900)); const r=3+depth*4,alpha=.25+depth*.6; const halo=ctx.createRadialGradient(node.sx,node.sy,0,node.sx,node.sy,r*4); halo.addColorStop(0,`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(alpha*.5).toFixed(3)})`); halo.addColorStop(1,'transparent'); ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(node.sx,node.sy,r*4,0,Math.PI*2); ctx.fill(); ctx.fillStyle=`rgba(255,255,255,${alpha.toFixed(3)})`; ctx.beginPath(); ctx.arc(node.sx,node.sy,Math.max(r,1),0,Math.PI*2); ctx.fill(); } else { const{ring,pts}=d; const depth=Math.max(0,Math.min(1,(d.avgZ+500)/900)); ctx.beginPath(); ctx.strokeStyle=`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(.08+depth*.22).toFixed(3)})`; ctx.lineWidth=.8+depth*1.2; pts.forEach((p,idx)=>idx===0?ctx.moveTo(p.sx,p.sy):ctx.lineTo(p.sx,p.sy)); ctx.stroke(); } }); drawVignette(); }
+  window.addEventListener('mousemove',e=>{ mouse.tx=((e.clientX/W)-.5)*0.6; mouse.ty=0.25+((e.clientY/H)-.5)*0.4; });
+  window.addEventListener('mouseleave',()=>{ mouse.tx=0; mouse.ty=0.25; });
+  resize(); init(); animate();
+  window.addEventListener('resize',()=>{ resize(); init(); });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ===== RENDER LISTINGS FROM DeltaStore (Firestore, real-time) ===== */
+  const grid = document.getElementById('listingGrid');
+  const emptyState = document.getElementById('emptyState');
+  let allPets = [];
+
+  function photoBlockHTML(pet){
+    if (pet.photos && pet.photos.length > 0) {
+      return `<div class="pet-photo" style="background-image:url('${pet.photos[0]}');background-size:cover;background-position:center;"></div>`;
+    }
+    return `<div class="pet-photo emoji-photo">${pet.photo}</div>`;
+  }
+
+  function cardHTML(pet, saved){
+    return `
+      <div class="pet-box" data-id="${pet.id}" data-type="${pet.category}" data-name="${(pet.name||'').toLowerCase()} ${(pet.breed||'').toLowerCase()}">
+        ${photoBlockHTML(pet)}
+        <div class="pet-info">
+          <div class="pet-name">${pet.name}</div>
+          <div class="pet-breed">📍 ${pet.city}</div>
+          <div class="pet-meta">
+            <span class="pet-chip price">₹${Number(pet.price).toLocaleString('en-IN')}</span>
+          </div>
+          <div class="listing-actions">
+            <button class="lock-btn view-btn" data-id="${pet.id}">View ${pet.name}</button>
+            <button class="save-toggle${saved ? ' saved' : ''}" data-id="${pet.id}">${saved ? '❤️ Saved' : '❤️ Save'}</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  async function renderGrid(){
+    const savedIds = await DeltaStore.getSaved();
+    grid.querySelectorAll('.pet-box').forEach(el => el.remove());
+    grid.insertAdjacentHTML('afterbegin', allPets.map(p => cardHTML(p, savedIds.includes(p.id))).join(''));
+
+    grid.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        window.location.href = `listing.html?id=${encodeURIComponent(btn.dataset.id)}`;
+      });
+    });
+    grid.querySelectorAll('.save-toggle').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const nowSaved = await DeltaStore.toggleSaved(btn.dataset.id);
+        btn.classList.toggle('saved', nowSaved);
+        btn.textContent = nowSaved ? '❤️ Saved' : '❤️ Save';
+        btn.disabled = false;
+      });
+    });
+
+    applyFilters();
+  }
+
+  /* ===== FILTER + SEARCH LOGIC ===== */
+  const filterBtns = document.querySelectorAll('.filter-chip');
+  const searchInput = document.getElementById('searchInput');
+  let activeFilter = 'all';
+
+  function applyFilters(){
+    const q = searchInput.value.trim().toLowerCase();
+    const cards = grid.querySelectorAll('.pet-box[data-type]');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const matchesType = activeFilter === 'all' || card.dataset.type === activeFilter;
+      const matchesSearch = card.dataset.name.includes(q);
+      const show = matchesType && matchesSearch;
+      card.style.display = show ? 'block' : 'none';
+      if (show) visibleCount++;
+    });
+    emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      applyFilters();
+    });
+  });
+  searchInput.addEventListener('input', applyFilters);
+
+  // Live-subscribes to Firestore: fires now, and again whenever
+  // any device (yours or a buyer's) publishes a new pet.
+  DeltaStore.onListingsChange(pets => {
+    allPets = pets;
+    renderGrid();
+  });
+</script>
+
+</body>
+</html>

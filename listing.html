@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing — Δ Delta Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="listing.css">
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">Δ Delta</a>
+    <ul class="nav-links">
+      <li><a href="home.html"><span class="nav-text">Home</span></a></li>
+      <li><a href="delta.html"><span class="nav-text">Marketplace</span></a></li>
+      <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="index.html" class="nav-cta">← Back</a></li>
+    </ul>
+  </nav>
+
+  <section class="listing-wrap" id="listingWrap">
+
+    <!-- GALLERY -->
+    <div class="gallery-card">
+      <div class="gallery-main emoji-photo" id="mainPhoto">🐾</div>
+      <div class="gallery-thumbs" id="galleryThumbs"></div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="details-card">
+      <div class="premium-badge">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
+        Verified Listing
+      </div>
+
+      <h1 class="pet-title" id="petTitle">—</h1>
+      <p class="pet-price" id="petPriceOut">—</p>
+      <p class="pet-location" id="petLocationOut">—</p>
+
+      <div class="spec-grid">
+        <div class="spec"><span class="spec-label">Breed</span><span class="spec-val" id="specBreed">—</span></div>
+        <div class="spec"><span class="spec-label">Age</span><span class="spec-val" id="specAge">—</span></div>
+        <div class="spec"><span class="spec-label">Gender</span><span class="spec-val" id="specGender">—</span></div>
+        <div class="spec"><span class="spec-label">Color</span><span class="spec-val" id="specColor">—</span></div>
+      </div>
+
+      <h3 class="desc-title">Description</h3>
+      <p class="desc-text" id="descText">—</p>
+
+      <!-- SELLER PROFILE -->
+      <div class="seller-card">
+        <div class="seller-avatar">👤</div>
+        <div class="seller-info">
+          <div class="seller-name" id="sellerName">—</div>
+          <div class="seller-meta" id="sellerMeta">—</div>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="action-row">
+        <button class="btn-primary" id="callBtn">📞 Call Seller</button>
+        <button class="btn-primary" id="chatBtn">💬 Chat</button>
+      </div>
+      <div class="action-row secondary">
+        <button class="btn-secondary" id="saveBtn">❤️ Save</button>
+        <button class="btn-secondary report" id="reportBtn">🚩 Report</button>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="listing-empty" id="listingEmpty" style="display:none; text-align:center; padding:60px 20px;">
+    <p>We couldn't find that listing.</p>
+    <a href="index.html" class="btn-primary">← Back to Marketplace</a>
+  </div>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
+  </footer>
+
+  <!-- REPORT MODAL -->
+  <div class="pbm-overlay" id="reportOverlay">
+    <div class="pbm">
+      <h3>Report This Listing</h3>
+      <p class="report-sub">Let us know what's wrong — our team will review it.</p>
+      <select class="report-select" id="reportReason">
+        <option value="">Select a reason</option>
+        <option value="fake">Fake or misleading listing</option>
+        <option value="sold">Already sold</option>
+        <option value="inappropriate">Inappropriate content</option>
+        <option value="other">Other</option>
+      </select>
+      <div class="pbm-btn-row">
+        <button class="pbm-cancel" id="reportCancel">Cancel</button>
+        <button class="pbm-unlock" id="reportSubmit">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT MODAL -->
+  <div class="pbm-overlay" id="chatOverlay">
+    <div class="pbm chat-modal">
+      <h3 id="chatModalTitle">Chat with Seller</h3>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-error" id="chatError" style="display:none;"></div>
+      <form class="chat-input-row" id="chatForm">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type a message…" autocomplete="off" maxlength="500">
+        <button type="submit" class="pbm-unlock" id="chatSendBtn">Send</button>
+      </form>
+      <button class="pbm-cancel" id="chatClose" style="margin-top:.6rem; width:100%;">Close</button>
+    </div>
+  </div>
+
+  <style>
+    .chat-modal { display: flex; flex-direction: column; max-height: 80vh; }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 200px;
+      max-height: 45vh;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      margin: .8rem 0;
+      padding: .4rem;
+    }
+    .chat-msg {
+      max-width: 78%;
+      padding: .55rem .85rem;
+      border-radius: 14px;
+      font-size: .88rem;
+      line-height: 1.35;
+      word-wrap: break-word;
+      background: rgba(122,122,140,0.14);
+      color: var(--text, #e8e2d5);
+      align-self: flex-start;
+    }
+    .chat-msg.mine {
+      background: linear-gradient(135deg, #f4a24d, #e07b7b);
+      color: #0d0f14;
+      align-self: flex-end;
+    }
+    .chat-empty {
+      text-align: center;
+      color: var(--muted, #7a7a8c);
+      font-size: .82rem;
+      padding: 1.5rem 0;
+    }
+    .chat-input-row { display: flex; gap: .5rem; }
+    .chat-input {
+      flex: 1;
+      padding: .6rem .9rem;
+      border-radius: 30px;
+      border: 1px solid rgba(244,162,77,0.3);
+      background: rgba(19,21,28,0.78);
+      color: var(--text, #e8e2d5);
+      font-size: .88rem;
+      outline: none;
+    }
+    .chat-input:focus { border-color: var(--accent, #f4a24d); }
+    .chat-error {
+      color: var(--accent2, #e07b7b);
+      font-size: .8rem;
+      text-align: center;
+      margin-bottom: .6rem;
+    }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
+  <script src="firebaseconfig.js"></script>
+  <script src="cloudinaryconfig.js"></script>
+  <script src="data.js"></script>
+<script>
+  /* ===== BACKGROUND CANVAS (unchanged) ===== */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const FOCAL = 560;
+  const COLS = [[244,162,77],[224,123,123],[201,111,208],[100,160,255]];
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function mkRing(i){ const col=COLS[i%COLS.length]; return {radius:180+i*70,tilt:(i*0.6)+Math.random()*0.4,spin:(Math.random()-.5)*0.012+0.004,rot:Math.random()*Math.PI*2,points:64,col,nodeOffset:Math.random()*Math.PI*2}; }
+  let rings=[];
+  function init(){ rings=Array.from({length:6},(_,i)=>mkRing(i)); }
+  let mouse={tx:0,ty:0.25}, camRotY=0, camRotX=0.25;
+  function project3D(x,y,z){ const cosY=Math.cos(camRotY),sinY=Math.sin(camRotY); let x1=x*cosY-z*sinY,z1=x*sinY+z*cosY; const cosX=Math.cos(camRotX),sinX=Math.sin(camRotX); let y1=y*cosX-z1*sinX,z2=y*sinX+z1*cosX; const scale=FOCAL/(FOCAL+z2+500); return{sx:W*.5+x1*scale,sy:H*.5+y1*scale,scale,z:z2}; }
+  function drawBlobs(t){ [{cx:W*.30+Math.sin(t*.30)*110,cy:H*.42+Math.cos(t*.20)*75,r:320,col:'244,162,77',a:.07},{cx:W*.72+Math.cos(t*.25)*90,cy:H*.60+Math.sin(t*.32)*65,r:250,col:'201,111,208',a:.07},{cx:W*.52+Math.sin(t*.18)*70,cy:H*.24+Math.cos(t*.22)*55,r:190,col:'100,160,255',a:.05}].forEach(({cx,cy,r,col,a})=>{ const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,`rgba(${col},${a})`); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }); }
+  function drawVignette(){ const g=ctx.createRadialGradient(W/2,H/2,H*.06,W/2,H/2,H*.80); g.addColorStop(0,'rgba(13,15,20,0)'); g.addColorStop(1,'rgba(13,15,20,.85)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+  let t=0;
+  function animate(){ requestAnimationFrame(animate); t+=.007; camRotY+=(mouse.tx-camRotY)*.02; camRotX+=(mouse.ty-camRotX)*.02; ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H); drawBlobs(t); const drawables=[]; rings.forEach(ring=>{ ring.rot+=ring.spin; const pts=[]; for(let p=0;p<=ring.points;p++){ const a=(p/ring.points)*Math.PI*2; const rx=Math.cos(a)*ring.radius,ry=Math.sin(a)*ring.radius*Math.sin(ring.tilt),rz=Math.sin(a)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); pts.push(project3D(rx*cs-rz*sn,ry,rx*sn+rz*cs)); } const avgZ=pts.reduce((s,p)=>s+p.z,0)/pts.length; drawables.push({ring,pts,avgZ}); const na=ring.nodeOffset+t*1.3; const nrx=Math.cos(na)*ring.radius,nry=Math.sin(na)*ring.radius*Math.sin(ring.tilt),nrz=Math.sin(na)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); const node=project3D(nrx*cs-nrz*sn,nry,nrx*sn+nrz*cs); drawables.push({node,ring,avgZ:node.z,isNode:true}); }); drawables.sort((a,b)=>a.avgZ-b.avgZ); drawables.forEach(d=>{ if(d.isNode){ const{node,ring}=d; const depth=Math.max(0,Math.min(1,(node.z+500)/900)); const r=3+depth*4,alpha=.25+depth*.6; const halo=ctx.createRadialGradient(node.sx,node.sy,0,node.sx,node.sy,r*4); halo.addColorStop(0,`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(alpha*.5).toFixed(3)})`); halo.addColorStop(1,'transparent'); ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(node.sx,node.sy,r*4,0,Math.PI*2); ctx.fill(); ctx.fillStyle=`rgba(255,255,255,${alpha.toFixed(3)})`; ctx.beginPath(); ctx.arc(node.sx,node.sy,Math.max(r,1),0,Math.PI*2); ctx.fill(); } else { const{ring,pts}=d; const depth=Math.max(0,Math.min(1,(d.avgZ+500)/900)); ctx.beginPath(); ctx.strokeStyle=`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(.08+depth*.22).toFixed(3)})`; ctx.lineWidth=.8+depth*1.2; pts.forEach((p,idx)=>idx===0?ctx.moveTo(p.sx,p.sy):ctx.lineTo(p.sx,p.sy)); ctx.stroke(); } }); drawVignette(); }
+  window.addEventListener('mousemove',e=>{ mouse.tx=((e.clientX/W)-.5)*0.6; mouse.ty=0.25+((e.clientY/H)-.5)*0.4; });
+  window.addEventListener('mouseleave',()=>{ mouse.tx=0; mouse.ty=0.25; });
+  resize(); init(); animate();
+  window.addEventListener('resize',()=>{ resize(); init(); });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ===== LOAD LISTING FROM DeltaStore BY ?id= ===== */
+  const params = new URLSearchParams(window.location.search);
+  const petId = params.get('id') || 'seed-1'; // fall back to the sample Golden Retriever
+  let currentPet = null; // shared with the chat handler below
+
+  (async () => {
+    const pet = await DeltaStore.getById(petId);
+    currentPet = pet;
+
+    if (!pet) {
+      document.getElementById('listingWrap').style.display = 'none';
+      document.getElementById('listingEmpty').style.display = 'block';
+      return;
+    }
+
+    document.title = `${pet.name} — Δ Delta Marketplace`;
+    document.getElementById('mainPhoto').textContent = pet.photo;
+    document.getElementById('petTitle').textContent = pet.name;
+    document.getElementById('petPriceOut').textContent = `₹${Number(pet.price).toLocaleString('en-IN')}`;
+    document.getElementById('petLocationOut').textContent = `📍 ${pet.city}`;
+    document.getElementById('specBreed').textContent = pet.breed || '—';
+    document.getElementById('specAge').textContent = pet.age || '—';
+    document.getElementById('specGender').textContent = pet.gender || '—';
+    document.getElementById('specColor').textContent = pet.color || '—';
+    document.getElementById('descText').textContent = pet.description || 'No description provided.';
+    document.getElementById('sellerName').textContent = pet.sellerName || 'Unknown Seller';
+    document.getElementById('sellerMeta').textContent = pet.sellerMeta || '';
+
+    // gallery: real uploaded photos if the seller added any,
+    // otherwise fall back to the emoji-based placeholder thumbs
+    const mainPhoto = document.getElementById('mainPhoto');
+    const thumbsWrap = document.getElementById('galleryThumbs');
+
+    function setMain(item){
+      if (item.type === 'img') {
+        mainPhoto.style.backgroundImage = `url('${item.src}')`;
+        mainPhoto.style.backgroundSize = 'cover';
+        mainPhoto.style.backgroundPosition = 'center';
+        mainPhoto.textContent = '';
+      } else {
+        mainPhoto.style.backgroundImage = '';
+        mainPhoto.textContent = item.src;
+      }
+    }
+
+    const gallery = (pet.photos && pet.photos.length > 0)
+      ? pet.photos.map(url => ({ type: 'img', src: url }))
+      : [pet.photo, pet.category === 'cat' ? '🐈' : '🐕', pet.category === 'cat' ? '😺' : '🦮']
+          .map(e => ({ type: 'emoji', src: e }));
+
+    thumbsWrap.innerHTML = gallery.map((item, i) => {
+      const active = i === 0 ? ' active' : '';
+      if (item.type === 'img') {
+        return `<div class="thumb${active}" data-type="img" data-src="${item.src}" style="background-image:url('${item.src}');background-size:cover;background-position:center;"></div>`;
+      }
+      return `<div class="thumb${active}" data-type="emoji" data-src="${item.src}">${item.src}</div>`;
+    }).join('');
+
+    thumbsWrap.querySelectorAll('.thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        thumbsWrap.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        setMain({ type: thumb.dataset.type, src: thumb.dataset.src });
+      });
+    });
+
+    setMain(gallery[0]);
+
+    // save toggle reflects and updates real saved state
+    const saveBtn = document.getElementById('saveBtn');
+    function paintSaveBtn(saved){
+      saveBtn.classList.toggle('saved', saved);
+      saveBtn.textContent = saved ? '❤️ Saved' : '❤️ Save';
+    }
+    paintSaveBtn(await DeltaStore.isSaved(pet.id));
+    saveBtn.addEventListener('click', async () => {
+      saveBtn.disabled = true;
+      const nowSaved = await DeltaStore.toggleSaved(pet.id);
+      paintSaveBtn(nowSaved);
+      saveBtn.disabled = false;
+    });
+  })();
+
+  /* ===== CALL (placeholder — coming next) ===== */
+  document.getElementById('callBtn').addEventListener('click', () => {
+    alert('Calling seller... (connect this to a real phone number)');
+  });
+
+  /* ===== CHAT (real, Firestore-backed) ===== */
+  const chatOverlay = document.getElementById('chatOverlay');
+  const chatMessagesEl = document.getElementById('chatMessages');
+  const chatError = document.getElementById('chatError');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
+
+  let activeChatId = null;
+  let unsubChat = null;
+  let myUid = null;
+
+  function renderMessages(messages){
+    if (messages.length === 0) {
+      chatMessagesEl.innerHTML = '<div class="chat-empty">No messages yet — say hello 👋</div>';
+      return;
+    }
+    chatMessagesEl.innerHTML = messages.map(m => {
+      const mine = m.senderId === myUid ? ' mine' : '';
+      const safeText = m.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `<div class="chat-msg${mine}">${safeText}</div>`;
+    }).join('');
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+  }
+
+  function closeChat(){
+    chatOverlay.classList.remove('open');
+    if (unsubChat) { unsubChat(); unsubChat = null; }
+    activeChatId = null;
+  }
+
+  document.getElementById('chatBtn').addEventListener('click', async () => {
+    if (!currentPet) return;
+    chatError.style.display = 'none';
+    chatMessagesEl.innerHTML = '<div class="chat-empty">Loading…</div>';
+    chatInput.value = '';
+    document.getElementById('chatModalTitle').textContent = `Chat with ${currentPet.sellerName || 'Seller'}`;
+    chatOverlay.classList.add('open');
+
+    try {
+      myUid = await DeltaStore.getCurrentUid();
+      activeChatId = await DeltaStore.getOrCreateChat(currentPet.id, currentPet.sellerId, currentPet.name);
+      chatInput.disabled = false;
+      chatSendBtn.disabled = false;
+      unsubChat = DeltaStore.onChatMessages(activeChatId, renderMessages);
+    } catch (err) {
+      chatMessagesEl.innerHTML = '';
+      chatError.textContent = err.message || 'Chat is unavailable for this listing right now.';
+      chatError.style.display = 'block';
+      chatInput.disabled = true;
+      chatSendBtn.disabled = true;
+    }
+  });
+
+  document.getElementById('chatClose').addEventListener('click', closeChat);
+
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!activeChatId) return;
+    const text = chatInput.value;
+    if (!text.trim()) return;
+    chatInput.value = '';
+    chatSendBtn.disabled = true;
+    try {
+      await DeltaStore.sendMessage(activeChatId, text);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      chatInput.value = text; // give it back so nothing's lost
+    }
+    chatSendBtn.disabled = false;
+    chatInput.focus();
+  });
+
+  /* ===== REPORT MODAL ===== */
+  const reportOverlay = document.getElementById('reportOverlay');
+  document.getElementById('reportBtn').addEventListener('click', () => reportOverlay.classList.add('open'));
+  document.getElementById('reportCancel').addEventListener('click', () => reportOverlay.classList.remove('open'));
+  document.getElementById('reportSubmit').addEventListener('click', () => {
+    const reason = document.getElementById('reportReason').value;
+    if (!reason) { alert('Please select a reason.'); return; }
+    reportOverlay.classList.remove('open');
+    alert('Thanks — this listing has been reported.');
+  });
+</script>
+
+</body>
+</html>

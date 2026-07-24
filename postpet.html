@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post a Pet — Δ Delta Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="postpet.css">
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">Δ Delta</a>
+    <ul class="nav-links">
+      <li><a href="home.html"><span class="nav-text">Home</span></a></li>
+      <li><a href="delta.html"><span class="nav-text">Marketplace</span></a></li>
+      <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="index.html" class="nav-cta">← Back</a></li>
+    </ul>
+  </nav>
+
+  <section class="form-wrap">
+
+    <div class="premium-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
+      Sell on Delta
+    </div>
+    <h1 class="brand">Post Your Pet</h1>
+    <p class="tagline">Upload Photos → Add Details → Publish</p>
+
+    <!-- STEP TRACKER -->
+    <div class="step-tracker">
+      <div class="step active" data-step="1">
+        <div class="step-dot">1</div>
+        <span>Photos</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2">
+        <div class="step-dot">2</div>
+        <span>Details</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3">
+        <div class="step-dot">3</div>
+        <span>Publish</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+
+      <!-- STEP 1: UPLOAD PHOTOS -->
+      <div class="form-panel active" id="panel-1">
+        <h3 class="panel-title">Upload Photos 📸</h3>
+        <p class="panel-sub">Add clear photos — listings with 3+ photos get more replies.</p>
+
+        <label class="upload-drop" for="photoInput">
+          <span class="upload-icon">🐾</span>
+          <span>Click to upload or drag photos here</span>
+          <input type="file" id="photoInput" accept="image/*" multiple hidden>
+        </label>
+
+        <div class="thumb-row" id="thumbRow"></div>
+
+        <div class="form-nav">
+          <button class="btn-primary" id="toStep2">Continue →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: ADD DETAILS -->
+      <div class="form-panel" id="panel-2">
+        <h3 class="panel-title">Pet Details 📝</h3>
+        <p class="panel-sub">Give buyers the info they need to trust your listing.</p>
+
+        <div class="field-grid">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" id="petName" placeholder="e.g. Bruno">
+          </div>
+          <div class="field">
+            <label>Breed</label>
+            <input type="text" id="petBreed" placeholder="e.g. Golden Retriever">
+          </div>
+          <div class="field">
+            <label>Age</label>
+            <input type="text" id="petAge" placeholder="e.g. 8 months">
+          </div>
+          <div class="field">
+            <label>Gender</label>
+            <select id="petGender">
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Color</label>
+            <input type="text" id="petColor" placeholder="e.g. Golden">
+          </div>
+          <div class="field">
+            <label>Price (₹)</label>
+            <input type="number" id="petPrice" placeholder="e.g. 18000">
+          </div>
+          <div class="field">
+            <label>City</label>
+            <input type="text" id="petCity" placeholder="e.g. Ahmedabad">
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="petCategory">
+              <option value="">Select</option>
+              <option value="dog">Dog</option>
+              <option value="cat">Cat</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Description</label>
+          <textarea id="petDesc" rows="4" placeholder="Tell buyers about the pet's personality, health, vaccination status..."></textarea>
+        </div>
+
+        <div class="form-nav">
+          <button class="btn-secondary" id="toStep1">← Back</button>
+          <button class="btn-primary" id="toStep3">Continue →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: PUBLISH -->
+      <div class="form-panel" id="panel-3">
+        <h3 class="panel-title">Review & Publish ✅</h3>
+        <p class="panel-sub">Double-check your listing before it goes live.</p>
+
+        <div class="preview-card">
+          <div class="preview-photo" id="previewPhoto">🐾</div>
+          <div class="preview-info">
+            <div class="preview-name" id="previewName">—</div>
+            <div class="preview-price" id="previewPrice">—</div>
+            <div class="preview-meta" id="previewMeta">—</div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="btn-secondary" id="toStep2b">← Back</button>
+          <button class="btn-publish" id="publishBtn">Publish Listing 🚀</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div class="form-panel" id="panel-success">
+        <div class="success-icon">🎉</div>
+        <h3 class="panel-title">Listing Published!</h3>
+        <p class="panel-sub">Your pet is now live on the Delta Marketplace.</p>
+        <div class="form-nav center">
+          <a href="delta.html" class="btn-secondary">Marketplace</a>
+          <a href="index.html" id="viewMyListingLink" class="btn-primary">View My Listing</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+  <script src="firebaseconfig.js"></script>
+  <script src="cloudinaryconfig.js"></script>
+  <script src="data.js"></script>
+<script>
+  /* ===== BACKGROUND CANVAS (unchanged) ===== */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const FOCAL = 560;
+  const COLS = [[244,162,77],[224,123,123],[201,111,208],[100,160,255]];
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function mkRing(i){ const col=COLS[i%COLS.length]; return {radius:180+i*70,tilt:(i*0.6)+Math.random()*0.4,spin:(Math.random()-.5)*0.012+0.004,rot:Math.random()*Math.PI*2,points:64,col,nodeOffset:Math.random()*Math.PI*2}; }
+  let rings=[];
+  function init(){ rings=Array.from({length:6},(_,i)=>mkRing(i)); }
+  let mouse={tx:0,ty:0.25}, camRotY=0, camRotX=0.25;
+  function project3D(x,y,z){ const cosY=Math.cos(camRotY),sinY=Math.sin(camRotY); let x1=x*cosY-z*sinY,z1=x*sinY+z*cosY; const cosX=Math.cos(camRotX),sinX=Math.sin(camRotX); let y1=y*cosX-z1*sinX,z2=y*sinX+z1*cosX; const scale=FOCAL/(FOCAL+z2+500); return{sx:W*.5+x1*scale,sy:H*.5+y1*scale,scale,z:z2}; }
+  function drawBlobs(t){ [{cx:W*.30+Math.sin(t*.30)*110,cy:H*.42+Math.cos(t*.20)*75,r:320,col:'244,162,77',a:.07},{cx:W*.72+Math.cos(t*.25)*90,cy:H*.60+Math.sin(t*.32)*65,r:250,col:'201,111,208',a:.07},{cx:W*.52+Math.sin(t*.18)*70,cy:H*.24+Math.cos(t*.22)*55,r:190,col:'100,160,255',a:.05}].forEach(({cx,cy,r,col,a})=>{ const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,`rgba(${col},${a})`); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }); }
+  function drawVignette(){ const g=ctx.createRadialGradient(W/2,H/2,H*.06,W/2,H/2,H*.80); g.addColorStop(0,'rgba(13,15,20,0)'); g.addColorStop(1,'rgba(13,15,20,.85)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+  let t=0;
+  function animate(){ requestAnimationFrame(animate); t+=.007; camRotY+=(mouse.tx-camRotY)*.02; camRotX+=(mouse.ty-camRotX)*.02; ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H); drawBlobs(t); const drawables=[]; rings.forEach(ring=>{ ring.rot+=ring.spin; const pts=[]; for(let p=0;p<=ring.points;p++){ const a=(p/ring.points)*Math.PI*2; const rx=Math.cos(a)*ring.radius,ry=Math.sin(a)*ring.radius*Math.sin(ring.tilt),rz=Math.sin(a)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); pts.push(project3D(rx*cs-rz*sn,ry,rx*sn+rz*cs)); } const avgZ=pts.reduce((s,p)=>s+p.z,0)/pts.length; drawables.push({ring,pts,avgZ}); const na=ring.nodeOffset+t*1.3; const nrx=Math.cos(na)*ring.radius,nry=Math.sin(na)*ring.radius*Math.sin(ring.tilt),nrz=Math.sin(na)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); const node=project3D(nrx*cs-nrz*sn,nry,nrx*sn+nrz*cs); drawables.push({node,ring,avgZ:node.z,isNode:true}); }); drawables.sort((a,b)=>a.avgZ-b.avgZ); drawables.forEach(d=>{ if(d.isNode){ const{node,ring}=d; const depth=Math.max(0,Math.min(1,(node.z+500)/900)); const r=3+depth*4,alpha=.25+depth*.6; const halo=ctx.createRadialGradient(node.sx,node.sy,0,node.sx,node.sy,r*4); halo.addColorStop(0,`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(alpha*.5).toFixed(3)})`); halo.addColorStop(1,'transparent'); ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(node.sx,node.sy,r*4,0,Math.PI*2); ctx.fill(); ctx.fillStyle=`rgba(255,255,255,${alpha.toFixed(3)})`; ctx.beginPath(); ctx.arc(node.sx,node.sy,Math.max(r,1),0,Math.PI*2); ctx.fill(); } else { const{ring,pts}=d; const depth=Math.max(0,Math.min(1,(d.avgZ+500)/900)); ctx.beginPath(); ctx.strokeStyle=`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(.08+depth*.22).toFixed(3)})`; ctx.lineWidth=.8+depth*1.2; pts.forEach((p,idx)=>idx===0?ctx.moveTo(p.sx,p.sy):ctx.lineTo(p.sx,p.sy)); ctx.stroke(); } }); drawVignette(); }
+  window.addEventListener('mousemove',e=>{ mouse.tx=((e.clientX/W)-.5)*0.6; mouse.ty=0.25+((e.clientY/H)-.5)*0.4; });
+  window.addEventListener('mouseleave',()=>{ mouse.tx=0; mouse.ty=0.25; });
+  resize(); init(); animate();
+  window.addEventListener('resize',()=>{ resize(); init(); });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ===== PHOTO UPLOAD PREVIEW =====
+     Placed early and kept independent of DeltaStore so thumbnail
+     previews work even if Firebase fails to initialize. */
+  const photoInput = document.getElementById('photoInput');
+  const thumbRow = document.getElementById('thumbRow');
+
+  // We keep our own array of selected files (rather than relying only
+  // on photoInput.files) so a photo can be removed from the preview
+  // without losing the rest of the selection, then sync it back onto
+  // the input via DataTransfer so the publish step still sees the
+  // right files.
+  let selectedFiles = [];
+
+  function syncInputFiles() {
+    const dt = new DataTransfer();
+    selectedFiles.forEach(file => dt.items.add(file));
+    photoInput.files = dt.files;
+  }
+
+  function renderThumbs() {
+    thumbRow.innerHTML = '';
+    selectedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const div = document.createElement('div');
+        div.className = 'upload-thumb';
+
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = file.name;
+        div.appendChild(img);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'thumb-remove';
+        removeBtn.textContent = '✕';
+        removeBtn.setAttribute('aria-label', `Remove ${file.name}`);
+        removeBtn.addEventListener('click', () => {
+          selectedFiles.splice(index, 1);
+          syncInputFiles();
+          renderThumbs();
+        });
+        div.appendChild(removeBtn);
+
+        thumbRow.appendChild(div);
+      };
+      reader.onerror = () => {
+        console.error('Failed to read file:', file.name);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  photoInput.addEventListener('change', () => {
+    const newFiles = Array.from(photoInput.files);
+    selectedFiles = [...selectedFiles, ...newFiles].slice(0, 6);
+    syncInputFiles();
+    renderThumbs();
+  });
+
+  // Generated once per visit to this page — photo uploads and the
+  // final Firestore doc both use this same id.
+  const listingId = DeltaStore.newId();
+
+  /* ===== STEP NAVIGATION ===== */
+  const panels = { 1: document.getElementById('panel-1'), 2: document.getElementById('panel-2'), 3: document.getElementById('panel-3') };
+  const stepDots = document.querySelectorAll('.step');
+
+  function goToStep(n){
+    Object.values(panels).forEach(p => p.classList.remove('active'));
+    panels[n].classList.add('active');
+    stepDots.forEach(s => {
+      const stepNum = parseInt(s.dataset.step);
+      s.classList.toggle('active', stepNum === n);
+      s.classList.toggle('done', stepNum < n);
+    });
+  }
+
+  document.getElementById('toStep2').addEventListener('click', () => goToStep(2));
+  document.getElementById('toStep1').addEventListener('click', () => goToStep(1));
+  document.getElementById('toStep2b').addEventListener('click', () => goToStep(2));
+  document.getElementById('toStep3').addEventListener('click', () => {
+    const name = document.getElementById('petName').value || 'Unnamed Pet';
+    const price = document.getElementById('petPrice').value;
+    const breed = document.getElementById('petBreed').value || '—';
+    const city = document.getElementById('petCity').value || '—';
+    const category = document.getElementById('petCategory').value;
+
+    document.getElementById('previewName').textContent = name;
+    document.getElementById('previewPrice').textContent = price ? `₹${Number(price).toLocaleString('en-IN')}` : 'Price not set';
+    document.getElementById('previewMeta').textContent = `${breed} · 📍 ${city}`;
+    document.getElementById('previewPhoto').textContent = category === 'cat' ? '🐱' : category === 'dog' ? '🐶' : '🐾';
+
+    goToStep(3);
+  });
+
+  /* ===== PUBLISH — uploads real photos, then saves the listing to Firestore ===== */
+  document.getElementById('publishBtn').addEventListener('click', async () => {
+    const publishBtn = document.getElementById('publishBtn');
+    const category = document.getElementById('petCategory').value || 'dog';
+    const price = Number(document.getElementById('petPrice').value) || 0;
+    const files = Array.from(photoInput.files).slice(0, 6);
+
+    publishBtn.disabled = true;
+
+    try {
+      let photoURLs = [];
+      if (files.length > 0) {
+        publishBtn.textContent = `Uploading photos... 📸 (0/${files.length})`;
+        photoURLs = await DeltaStore.uploadPhotos(listingId, files, (done, total, pct) => {
+          publishBtn.textContent = done < total
+            ? `Uploading photos... 📸 (${done}/${total} · ${pct}%)`
+            : `Uploading photos... 📸 (${done}/${total})`;
+        });
+        publishBtn.textContent = 'Publishing... 🚀';
+      } else {
+        publishBtn.textContent = 'Publishing... 🚀';
+      }
+
+      const newListing = await DeltaStore.add({
+        id: listingId,
+        name: document.getElementById('petName').value.trim() || 'Unnamed Pet',
+        breed: document.getElementById('petBreed').value.trim(),
+        age: document.getElementById('petAge').value.trim(),
+        gender: document.getElementById('petGender').value,
+        color: document.getElementById('petColor').value.trim(),
+        price: price,
+        city: document.getElementById('petCity').value.trim(),
+        category: category,
+        description: document.getElementById('petDesc').value.trim(),
+        photos: photoURLs
+      });
+
+      // point the success screen's "View My Listing" button at the real new listing
+      document.getElementById('viewMyListingLink').href = `listing.html?id=${encodeURIComponent(newListing.id)}`;
+
+      document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-success').classList.add('active');
+      stepDots.forEach(s => s.classList.add('done'));
+    } catch (err) {
+      console.error('Publish failed:', err);
+      const detail = err && (err.code || err.message) ? `\n\n(${err.code || ''} ${err.message || ''})`.trim() : '';
+      alert('Something went wrong publishing your listing.' + detail + '\n\nCheck the browser console for full details.');
+      publishBtn.disabled = false;
+      publishBtn.textContent = 'Publish Listing 🚀';
+    }
+  });
+</script>
+
+</body>
+</html>

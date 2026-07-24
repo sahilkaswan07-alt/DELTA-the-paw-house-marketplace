@@ -1,0 +1,195 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELTA — Paw House Marketplace</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+ 
+<div id="welcome-stage">
+  <div id="gates">
+    <div class="gate left">
+      <div class="gate-edge"></div>
+      <div class="gate-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
+      </div>
+      <div class="gate-rings" id="ringsLeft"></div>
+    </div>
+    <div class="gate right">
+      <div class="gate-edge"></div>
+      <div class="gate-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
+      </div>
+      <div class="gate-rings" id="ringsRight"></div>
+    </div>
+  </div>
+ 
+  <div id="title-wrap">
+    <div class="premium-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
+      Paw House Series
+    </div>
+    <div class="paw-icon">🛍️</div>
+    <h1 class="brand">Welcome To Delta House</h1>
+    <p class="tagline">Δ The Paw House Marketplace</p>   
+    <button onclick="window.location.href='home.html'" id="enter-btn">Enter DELTA →</button>
+  </div>
+ 
+  <div class="tap-hint" id="tapHint">Tap to open the gates</div>
+</div>
+ 
+<script>
+  // ---- background canvas (matches landing page's orbiting ring field) ----
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const FOCAL = 560;
+  const COLS = [[62,224,201],[111,131,240],[160,111,224],[77,190,240]];
+ 
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function mkRing(i){
+    const col = COLS[i % COLS.length];
+    return { radius:180+i*70, tilt:(i*0.6)+Math.random()*0.4, spin:(Math.random()-.5)*0.012+0.004,
+      rot:Math.random()*Math.PI*2, points:64, col, nodeOffset:Math.random()*Math.PI*2 };
+  }
+  let rings = [];
+  function init(){ rings = Array.from({length:6},(_,i)=>mkRing(i)); }
+
+  let mouse = {x:0,y:0,tx:0,ty:0};
+  let opened = false; // becomes true once the gates open
+  let camRotY=0, camRotX=0.25;
+  function project3D(x,y,z){
+    const cosY=Math.cos(camRotY), sinY=Math.sin(camRotY);
+    let x1=x*cosY-z*sinY, z1=x*sinY+z*cosY;
+    const cosX=Math.cos(camRotX), sinX=Math.sin(camRotX);
+    let y1=y*cosX-z1*sinX, z2=y*sinX+z1*cosX;
+    const scale=FOCAL/(FOCAL+z2+500);
+    return { sx:W*.5+x1*scale, sy:H*.5+y1*scale, scale, z:z2 };
+  }
+  function drawBlobs(t){
+    const blobs=[
+      {cx:W*.30+Math.sin(t*.30)*110, cy:H*.42+Math.cos(t*.20)*75, r:320, col:'62,224,201', a:.07},
+      {cx:W*.72+Math.cos(t*.25)*90, cy:H*.60+Math.sin(t*.32)*65, r:250, col:'160,111,224', a:.07},
+      {cx:W*.52+Math.sin(t*.18)*70, cy:H*.24+Math.cos(t*.22)*55, r:190, col:'100,160,255', a:.05},
+    ];
+    blobs.forEach(({cx,cy,r,col,a})=>{
+      const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+      g.addColorStop(0,`rgba(${col},${a})`); g.addColorStop(1,'transparent');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    });
+  }
+  function drawVignette(){
+    const g=ctx.createRadialGradient(W/2,H/2,H*.06,W/2,H/2,H*.80);
+    g.addColorStop(0,'rgba(10,14,19,0)'); g.addColorStop(1,'rgba(10,14,19,.85)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  }
+  let t=0;
+  function animate(){
+    requestAnimationFrame(animate);
+    t+=.007;
+    camRotY += (mouse.tx-camRotY)*.02;
+    camRotX += (mouse.ty-camRotX)*.02;
+    ctx.fillStyle='#0a0e13'; ctx.fillRect(0,0,W,H);
+    drawBlobs(t);
+    const drawables=[];
+    rings.forEach(ring=>{
+      ring.rot += ring.spin;
+      const pts=[];
+      for(let p=0;p<=ring.points;p++){
+        const a=(p/ring.points)*Math.PI*2;
+        const rx=Math.cos(a)*ring.radius;
+        const ry=Math.sin(a)*ring.radius*Math.sin(ring.tilt);
+        const rz=Math.sin(a)*ring.radius*Math.cos(ring.tilt);
+        const cs=Math.cos(ring.rot), sn=Math.sin(ring.rot);
+        const fx=rx*cs-rz*sn, fz=rx*sn+rz*cs;
+        pts.push(project3D(fx,ry,fz));
+      }
+      const avgZ=pts.reduce((s,p)=>s+p.z,0)/pts.length;
+      drawables.push({ring,pts,avgZ});
+      const na=ring.nodeOffset+t*1.3;
+      const nrx=Math.cos(na)*ring.radius;
+      const nry=Math.sin(na)*ring.radius*Math.sin(ring.tilt);
+      const nrz=Math.sin(na)*ring.radius*Math.cos(ring.tilt);
+      const cs=Math.cos(ring.rot), sn=Math.sin(ring.rot);
+      const nfx=nrx*cs-nrz*sn, nfz=nrx*sn+nrz*cs;
+      const node=project3D(nfx,nry,nfz);
+      drawables.push({node,ring,avgZ:node.z,isNode:true});
+    });
+    drawables.sort((a,b)=>a.avgZ-b.avgZ);
+    drawables.forEach(d=>{
+      if(d.isNode){
+        const {node,ring}=d;
+        const depth=Math.max(0,Math.min(1,(node.z+500)/900));
+        const r=(3+depth*4);
+        const alpha=.25+depth*.6;
+        const halo=ctx.createRadialGradient(node.sx,node.sy,0,node.sx,node.sy,r*4);
+        halo.addColorStop(0,`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(alpha*.5).toFixed(3)})`);
+        halo.addColorStop(1,'transparent');
+        ctx.fillStyle=halo;
+        ctx.beginPath(); ctx.arc(node.sx,node.sy,r*4,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle=`rgba(255,255,255,${(alpha).toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(node.sx,node.sy,Math.max(r,1),0,Math.PI*2); ctx.fill();
+      } else {
+        const {ring,pts}=d;
+        const depth=Math.max(0,Math.min(1,(d.avgZ+500)/900));
+        const alpha=.08+depth*.22;
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${alpha.toFixed(3)})`;
+        ctx.lineWidth=.8+depth*1.2;
+        pts.forEach((p,idx)=> idx===0 ? ctx.moveTo(p.sx,p.sy) : ctx.lineTo(p.sx,p.sy));
+        ctx.stroke();
+      }
+    });
+    drawVignette();
+  }
+  window.addEventListener('mousemove', e=>{
+    mouse.tx = ((e.clientX/W)-.5)*0.6;
+    mouse.ty = 0.25 + ((e.clientY/H)-.5)*0.4;
+  });
+  window.addEventListener('mouseleave', ()=>{ mouse.tx=0; mouse.ty=0.25; });
+ 
+  resize(); init(); animate();
+  window.addEventListener('resize', ()=>{ resize(); init(); });
+ 
+  // decorative concentric rings inside each glass gate
+  function addGateRings(id){
+    const el = document.getElementById(id);
+    for(let i=0;i<4;i++){
+      const s=document.createElement('span');
+      const size = 120 + i*90;
+      s.style.width=size+'px';
+      s.style.height=size+'px';
+      s.style.left='50%'; s.style.top='50%';
+      s.style.marginLeft=(-size/2)+'px';
+      s.style.marginTop=(-size/2)+'px';
+      el.appendChild(s);
+    }
+  }
+  addGateRings('ringsLeft');
+  addGateRings('ringsRight');
+ 
+  function openGates(){
+    if(opened) return;
+    opened = true;
+    document.getElementById('tapHint').classList.add('hidden');
+    const gates = document.getElementById('gates');
+    gates.classList.add('open');
+    setTimeout(()=> gates.classList.add('hide'), 2200);
+    document.getElementById('title-wrap').classList.add('show');
+  }
+  document.getElementById('welcome-stage').addEventListener('click', (e)=>{
+    if(e.target.id === 'enter-btn') return;
+    openGates();
+  });
+ 
+  function goToLanding(){
+    document.body.style.transition = 'opacity .6s ease';
+    document.body.style.opacity = '0';
+    setTimeout(()=>{ window.location.href = 'delta-marketplace.html'; }, 600);
+  }
+</script>  
+</body>
+</html>
