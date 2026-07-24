@@ -6,6 +6,10 @@
 <title>Listing — Δ Delta Marketplace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
 <link rel="stylesheet" href="listing.css">
 </head>
 <body>
@@ -172,14 +176,14 @@
     }
   </style>
 
-  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
-  <script src="firebaseconfig.js"></script>
-  <script src="cloudinaryconfig.js"></script>
-  <script src="data.js"></script>
-<script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js" defer></script>
+  <script src="firebaseconfig.js" defer></script>
+  <script src="cloudinaryconfig.js" defer></script>
+  <script src="data.js" defer></script>
+<script defer>
+  document.addEventListener('DOMContentLoaded', () => {
   /* ===== BACKGROUND CANVAS (unchanged) ===== */
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
@@ -390,6 +394,7 @@
     reportOverlay.classList.remove('open');
     alert('Thanks — this listing has been reported.');
   });
+  }); // end DOMContentLoaded
 </script>
 
 </body>

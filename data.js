@@ -110,7 +110,14 @@ const DeltaStore = (() => {
   // any DeltaStore method is called, so it's not silent.
   ready.catch(err => console.error('DeltaStore failed to initialize:', err));
 
+  const SEEDED_FLAG = 'delta_seeded_v1';
+
   async function _seedIfEmpty() {
+    // Once we know listings exist, remember it locally so every future
+    // page load skips this extra read instead of re-checking Firestore
+    // every single time.
+    if (localStorage.getItem(SEEDED_FLAG) === '1') return;
+
     const snap = await db.collection(LISTINGS).limit(1).get();
     if (snap.empty) {
       const batch = db.batch();
@@ -120,6 +127,7 @@ const DeltaStore = (() => {
       });
       await batch.commit();
     }
+    localStorage.setItem(SEEDED_FLAG, '1');
   }
 
   async function _loadSavedCache() {
