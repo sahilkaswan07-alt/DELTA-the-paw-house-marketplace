@@ -58,6 +58,7 @@
         <div class="seller-info">
           <div class="seller-name" id="sellerName">—</div>
           <div class="seller-meta" id="sellerMeta">—</div>
+          <div class="seller-phone" id="sellerPhone" style="display:none; font-size:.85rem; margin-top:.2rem; color: var(--muted, #7a7a8c);"></div>
         </div>
       </div>
 
@@ -230,6 +231,12 @@
     document.getElementById('sellerName').textContent = pet.sellerName || 'Unknown Seller';
     document.getElementById('sellerMeta').textContent = pet.sellerMeta || '';
 
+    const sellerPhoneEl = document.getElementById('sellerPhone');
+    if (pet.sellerPhone) {
+      sellerPhoneEl.textContent = `📞 ${pet.sellerPhone}`;
+      sellerPhoneEl.style.display = 'block';
+    }
+
     // gallery: real uploaded photos if the seller added any,
     // otherwise fall back to the emoji-based placeholder thumbs
     const mainPhoto = document.getElementById('mainPhoto');
@@ -285,9 +292,19 @@
     });
   })();
 
-  /* ===== CALL (placeholder — coming next) ===== */
+  /* ===== CALL SELLER ===== */
   document.getElementById('callBtn').addEventListener('click', () => {
-    alert('Calling seller... (connect this to a real phone number)');
+    if (!currentPet) return;
+
+    const rawPhone = currentPet.sellerPhone;
+    if (!rawPhone) {
+      alert("This seller hasn't listed a phone number yet. Try the Chat option instead.");
+      return;
+    }
+
+    // Strip anything that isn't a digit or a leading +
+    const cleanPhone = rawPhone.trim().replace(/(?!^\+)[^\d]/g, '');
+    window.location.href = `tel:${cleanPhone}`;
   });
 
   /* ===== CHAT (real, Firestore-backed) ===== */

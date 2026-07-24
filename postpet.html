@@ -116,6 +116,10 @@
               <option value="cat">Cat</option>
             </select>
           </div>
+          <div class="field">
+            <label>Your Phone Number</label>
+            <input type="tel" id="petSellerPhone" placeholder="e.g. +91 98765 43210">
+          </div>
         </div>
 
         <div class="field full">
@@ -299,6 +303,24 @@
     const category = document.getElementById('petCategory').value || 'dog';
     const price = Number(document.getElementById('petPrice').value) || 0;
     const files = Array.from(photoInput.files).slice(0, 6);
+    const sellerPhone = document.getElementById('petSellerPhone').value.trim();
+
+    if (!sellerPhone) {
+      alert('Please add a phone number so buyers can call you.');
+      goToStep(2);
+      document.getElementById('petSellerPhone').focus();
+      return;
+    }
+    // Loose check: allow spaces, dashes, parens, optional leading +,
+    // require at least 7 digits — good enough to catch typos without
+    // being overly strict about international formats.
+    const digitCount = (sellerPhone.match(/\d/g) || []).length;
+    if (digitCount < 7) {
+      alert('That phone number looks incomplete — please double-check it.');
+      goToStep(2);
+      document.getElementById('petSellerPhone').focus();
+      return;
+    }
 
     publishBtn.disabled = true;
 
@@ -327,7 +349,8 @@
         city: document.getElementById('petCity').value.trim(),
         category: category,
         description: document.getElementById('petDesc').value.trim(),
-        photos: photoURLs
+        photos: photoURLs,
+        sellerPhone: sellerPhone
       });
 
       // point the success screen's "View My Listing" button at the real new listing
