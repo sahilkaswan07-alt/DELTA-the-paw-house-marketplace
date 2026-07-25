@@ -320,3 +320,62 @@ html, body {
       transition: color 0.2s;
     }
     .sahil-kaswan:hover { color: var(--muted); }
+/* ==========================================================================
+   RESPONSIVE — TABLET & MOBILE
+   ========================================================================== */
+
+/* ---- Tablet / iPad (≤1024px) ---- */
+@media (max-width: 1024px) {
+  .listing-wrap { max-width: 100%; padding: 6.5rem 1.5rem 3.5rem; gap: 1.6rem; }
+  .gallery-main.emoji-photo { height: 280px; font-size: 6.5rem; }
+}
+
+/* ---- iPad portrait / stacked layout (≤800px, matches existing breakpoint) ---- */
+@media (max-width: 800px) {
+  .listing-wrap { padding: 6rem 1.2rem 3rem; gap: 1.4rem; }
+  .gallery-main.emoji-photo { height: 260px; font-size: 6rem; }
+  .details-card { padding: 1.5rem 1.4rem; }
+}
+
+/* ---- Mobile phones (≤600px) ---- */
+@media (max-width: 600px) {
+  .navbar { padding: .75rem 1rem; }
+  .nav-links { gap: .8rem; }
+  .nav-links a { font-size: .78rem; }
+  .nav-links .nav-cta { padding: .38rem .85rem; font-size: .76rem; }
+
+  .listing-wrap { padding: 5.5rem 1rem 2.5rem; gap: 1.1rem; }
+
+  .gallery-main.emoji-photo { height: 220px; font-size: 5rem; }
+  .gallery-thumbs { padding: .8rem; gap: .5rem; flex-wrap: wrap; }
+  .thumb { width: 48px; height: 48px; font-size: 1.4rem; }
+
+  .details-card { padding: 1.3rem 1.1rem; }
+  .pet-title { font-size: 1.4rem; }
+  .pet-price { font-size: 1.2rem; }
+  .pet-location { margin-bottom: 1.1rem; font-size: .8rem; }
+
+  /* single-column specs so labels/values never crowd on narrow screens */
+  .spec-grid { grid-template-columns: 1fr 1fr; gap: .7rem; margin-bottom: 1.2rem; padding-bottom: 1.2rem; }
+  .spec-val { font-size: .85rem; }
+
+  .desc-text { font-size: .84rem; margin-bottom: 1.2rem; }
+
+  .seller-card { padding: .7rem .85rem; margin-bottom: 1.2rem; }
+  .seller-avatar { width: 38px; height: 38px; font-size: 1.1rem; }
+
+  /* stack action buttons full-width for easy tapping */
+  .action-row { flex-direction: column; gap: .6rem; }
+  .action-row.secondary { flex-direction: row; }
+  .btn-primary, .btn-secondary { font-size: .82rem; padding: .75rem 1rem; }
+
+  .pbm { padding: 1.6rem; border-radius: 20px; }
+  .pbm h3 { font-size: 1.1rem; }
+}
+
+/* ---- Very small phones (≤380px) ---- */
+@media (max-width: 380px) {
+  .spec-grid { grid-template-columns: 1fr; }
+  .action-row.secondary { flex-direction: column; }
+  .gallery-main.emoji-photo { height: 190px; font-size: 4.2rem; }
+}

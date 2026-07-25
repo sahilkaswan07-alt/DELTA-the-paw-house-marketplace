@@ -299,3 +299,74 @@ html, body {
       transition: color 0.2s;
     }
     .sahil-kaswan:hover { color: var(--muted); }
+/* ==========================================================================
+   RESPONSIVE — TABLET & MOBILE
+   ========================================================================== */
+
+/* ---- Tablet / iPad (≤1024px) ---- */
+@media (max-width: 1024px) {
+  .pets-section { padding: 2rem 1.5rem 4rem; }
+  .pets-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1.1rem; }
+  .delta-hero { padding: 7rem 1.5rem 2.5rem; }
+}
+
+/* ---- iPad portrait / large phones (≤768px) ---- */
+@media (max-width: 768px) {
+  .navbar { padding: .85rem 1.2rem; }
+  .nav-links { gap: 1.1rem; }
+  .nav-links .nav-cta { padding: .4rem .9rem; }
+
+  .delta-hero { padding: 6.5rem 1.2rem 2rem; }
+  .search-bar { max-width: 100%; padding: .8rem 1.2rem; font-size: .9rem; }
+  .filters { gap: .5rem; }
+  .filter-chip { padding: .45rem 1.1rem; font-size: .78rem; }
+
+  .pets-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: .9rem; }
+  .pet-photo, .emoji-photo { height: 120px; }
+  .emoji-photo { font-size: 3rem; }
+  .pet-info { padding: .85rem .9rem 1rem; }
+  .pet-name { font-size: 1rem; }
+
+  .post-pet-fab { bottom: 18px; right: 18px; padding: .75rem 1.3rem; font-size: .8rem; }
+}
+
+/* ---- Mobile phones (≤480px) ---- */
+@media (max-width: 480px) {
+  .navbar { padding: .7rem 1rem; }
+  .nav-logo { font-size: 1.05rem; }
+  .nav-links { gap: .7rem; }
+  .nav-links a { font-size: .78rem; }
+  .nav-links .nav-cta { padding: .35rem .75rem; font-size: .75rem; }
+
+  .premium-badge { font-size: .62rem; padding: .4rem .9rem; }
+  .brand { font-size: clamp(1.9rem, 10vw, 2.6rem); }
+  .tagline { font-size: .72rem; margin-bottom: 1.4rem; }
+
+  .search-bar { padding: .75rem 1.1rem; font-size: .85rem; }
+  .filters { gap: .45rem; }
+  .filter-chip { padding: .4rem 1rem; font-size: .74rem; }
+
+  .sec-head h2 { font-size: 1.3rem; }
+  .sec-head p { font-size: .78rem; }
+
+  /* single-column feed reads better than a squeeze on very narrow screens */
+  .pets-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .7rem; }
+  .pet-photo, .emoji-photo { height: 110px; }
+  .emoji-photo { font-size: 2.6rem; }
+  .pet-name { font-size: .95rem; }
+  .pet-breed { font-size: .72rem; }
+  .lock-btn, .save-toggle { font-size: .7rem; padding: .5rem .8rem; }
+
+  .post-pet-fab { bottom: 14px; right: 14px; padding: .7rem 1.1rem; font-size: .76rem; }
+  .footer { padding: 1.6rem 1rem 2rem; font-size: .72rem; }
+}
+
+/* ---- Very small phones (≤360px) ---- */
+@media (max-width: 360px) {
+  .pets-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---- Landscape phones ---- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .delta-hero { padding: 5.5rem 1.2rem 1.5rem; }
+}

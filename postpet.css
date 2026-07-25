@@ -310,3 +310,58 @@ html, body {
       transition: color 0.2s;
     }
     .sahil-kaswan:hover { color: var(--muted); }
+/* ==========================================================================
+   RESPONSIVE — TABLET & MOBILE
+   ========================================================================== */
+
+/* ---- Tablet / iPad (≤1024px) ---- */
+@media (max-width: 1024px) {
+  .form-wrap { max-width: 90%; padding: 6.5rem 1.5rem 3.5rem; }
+}
+
+/* ---- Mobile phones (≤640px) ---- */
+@media (max-width: 640px) {
+  .navbar { padding: .75rem 1rem; }
+  .nav-links { gap: .8rem; }
+  .nav-links a { font-size: .78rem; }
+  .nav-links .nav-cta { padding: .38rem .85rem; font-size: .76rem; }
+
+  .form-wrap { padding: 5.5rem 1rem 3rem; }
+  .premium-badge { font-size: .66rem; padding: .45rem .9rem; }
+  .brand { font-size: clamp(1.6rem, 7vw, 2.1rem); }
+  .tagline { font-size: .76rem; margin-bottom: 1.5rem; }
+
+  /* step tracker: shrink dots & connecting lines so all steps fit one row */
+  .step-tracker { gap: .35rem; margin-bottom: 1.5rem; }
+  .step-dot { width: 26px; height: 26px; font-size: .7rem; }
+  .step span { font-size: .58rem; }
+  .step-line { width: 20px; }
+
+  .form-card { padding: 1.4rem 1.1rem; border-radius: 16px; }
+  .panel-title { font-size: 1.1rem; }
+  .panel-sub { font-size: .78rem; margin-bottom: 1.1rem; }
+
+  .upload-drop { padding: 1.8rem .8rem; font-size: .8rem; }
+  .upload-icon { font-size: 1.7rem; }
+  .upload-thumb { width: 56px; height: 56px; }
+
+  /* stack the two-up field grid into a single column on narrow screens */
+  .field-grid { grid-template-columns: 1fr; gap: .8rem; }
+  .field input, .field select, .field textarea { font-size: .85rem; padding: .6rem .8rem; }
+
+  .preview-card { padding: .85rem; gap: .8rem; }
+  .preview-photo { width: 56px; height: 56px; font-size: 1.8rem; }
+  .preview-name { font-size: .95rem; }
+
+  /* stack primary/secondary form nav buttons for easier thumb reach */
+  .form-nav { flex-direction: column; gap: .6rem; }
+  .btn-primary, .btn-secondary, .btn-publish { font-size: .82rem; padding: .75rem 1.1rem; }
+}
+
+/* ---- Very small phones (≤380px) ---- */
+@media (max-width: 380px) {
+  .step-tracker { flex-wrap: wrap; row-gap: .5rem; }
+  .step-line { display: none; }
+  .thumb-row { gap: .45rem; }
+  .upload-thumb { width: 50px; height: 50px; }
+}

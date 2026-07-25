@@ -210,3 +210,53 @@
   }
   @keyframes pulseHint{ 0%,100%{opacity:.35;} 50%{opacity:.85;} }
   .tap-hint.hidden{ display:none; }
+/* ==========================================================================
+   RESPONSIVE — TABLET & MOBILE
+   ========================================================================== */
+
+/* ---- Tablet / iPad (≤1024px) ---- */
+@media (max-width: 1024px) {
+  .gate-mark { width: 60px; height: 60px; }
+  .gate-mark svg { width: 26px; height: 26px; }
+  .gate.left .gate-mark { right: 35px; }
+  .gate.right .gate-mark { left: 35px; }
+}
+
+/* ---- iPad portrait / large phones (≤768px) ---- */
+@media (max-width: 768px) {
+  .premium-badge { font-size: .64rem; padding: .45rem .9rem; }
+  .paw-icon { font-size: 2rem; }
+  .tagline { margin-bottom: 1.8rem; }
+  #enter-btn { padding: .8rem 2rem; font-size: .8rem; }
+  .tap-hint { font-size: .72rem; bottom: 6%; }
+
+  .gate-mark { width: 52px; height: 52px; }
+  .gate-mark svg { width: 22px; height: 22px; }
+  .gate.left .gate-mark { right: 24px; }
+  .gate.right .gate-mark { left: 24px; }
+}
+
+/* ---- Mobile phones (≤480px) ---- */
+@media (max-width: 480px) {
+  #title-wrap { padding: 0 1rem; }
+  .premium-badge { font-size: .58rem; padding: .4rem .8rem; gap: .4rem; }
+  .premium-badge svg { width: 11px; height: 11px; }
+  .paw-icon { font-size: 1.7rem; margin-bottom: .2rem; }
+  .brand { font-size: clamp(2rem, 9vw, 2.6rem); }
+  .tagline { font-size: .68rem; letter-spacing: .12em; margin-bottom: 1.5rem; }
+  #enter-btn { padding: .75rem 1.7rem; font-size: .75rem; letter-spacing: .08em; }
+  .tap-hint { font-size: .66rem; bottom: 5%; letter-spacing: .12em; }
+
+  /* smaller, less intrusive gate marks so the icon never overlaps the title */
+  .gate-mark { width: 40px; height: 40px; }
+  .gate-mark svg { width: 18px; height: 18px; }
+  .gate.left .gate-mark { right: 14px; }
+  .gate.right .gate-mark { left: 14px; }
+}
+
+/* ---- Landscape phones (short viewport) ---- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .paw-icon { display: none; }
+  .premium-badge { margin-bottom: .8rem; }
+  .tagline { margin-bottom: 1.2rem; }
+}
