@@ -298,3 +298,15 @@ html, body {
   font-size: .78rem;
   border-top: 1px solid rgba(244,162,77,0.1);
 }
+
+ /* designer credit */
+    .sahil-kaswan {
+      display: block;
+      text-decoration: none;
+      font-size: 0.72rem;
+      color: gold;
+      letter-spacing: 0.05em;
+      line-height: 1.8;
+      transition: color 0.2s;
+    }
+    .sahil-kaswan:hover { color: var(--muted); }

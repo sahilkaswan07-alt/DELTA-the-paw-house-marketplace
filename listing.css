@@ -308,3 +308,15 @@ html, body {
 }
 .pbm-unlock { background: linear-gradient(135deg, #f4a24d, #e07b7b); color: #0d0f14; }
 .pbm-cancel { background: rgba(244,162,77,0.08); border: 1.5px solid rgba(244,162,77,0.3); color: var(--accent); }
+
+ /* designer credit */
+    .sahil-kaswan {
+      display: block;
+      text-decoration: none;
+      font-size: 0.72rem;
+      color: gold;
+      letter-spacing: 0.05em;
+      line-height: 1.8;
+      transition: color 0.2s;
+    }
+    .sahil-kaswan:hover { color: var(--muted); }
