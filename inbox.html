@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Listing — Δ Delta Marketplace</title>
+<title>Messages — Δ Delta Marketplace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
 <link rel="stylesheet" href="listing.css">
 </head>
 <body>
@@ -21,69 +20,23 @@
     <a href="home.html" class="nav-logo">Δ Delta</a>
     <ul class="nav-links">
       <li><a href="home.html"><span class="nav-text">Home</span></a></li>
-      <li><a href="delta.html"><span class="nav-text">Marketplace</span></a></li>
+      <li><a href="home.html"><span class="nav-text">Marketplace</span></a></li>
       <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
       <li><a href="inbox.html"><span class="nav-text">Messages</span></a></li>
       <li><a href="home.html" class="nav-cta">← Back</a></li>
     </ul>
   </nav>
 
-  <section class="listing-wrap" id="listingWrap">
+  <section class="inbox-wrap">
+    <div class="details-card inbox-card">
+      <h1 class="pet-title" style="margin-bottom:.3rem;">Messages</h1>
+      <p class="pet-location" style="margin-bottom:1.2rem;">Chats from listings you've posted, and listings you've messaged about.</p>
 
-    <!-- GALLERY -->
-    <div class="gallery-card">
-      <div class="gallery-main emoji-photo" id="mainPhoto">🐾</div>
-      <div class="gallery-thumbs" id="galleryThumbs"></div>
-    </div>
-
-    <!-- DETAILS -->
-    <div class="details-card">
-      <div class="premium-badge">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
-        Verified Listing
-      </div>
-
-      <h1 class="pet-title" id="petTitle">—</h1>
-      <p class="pet-price" id="petPriceOut">—</p>
-      <p class="pet-location" id="petLocationOut">—</p>
-
-      <div class="spec-grid">
-        <div class="spec"><span class="spec-label">Breed</span><span class="spec-val" id="specBreed">—</span></div>
-        <div class="spec"><span class="spec-label">Age</span><span class="spec-val" id="specAge">—</span></div>
-        <div class="spec"><span class="spec-label">Gender</span><span class="spec-val" id="specGender">—</span></div>
-        <div class="spec"><span class="spec-label">Color</span><span class="spec-val" id="specColor">—</span></div>
-      </div>
-
-      <h3 class="desc-title">Description</h3>
-      <p class="desc-text" id="descText">—</p>
-
-      <!-- SELLER PROFILE -->
-      <div class="seller-card">
-        <div class="seller-avatar">👤</div>
-        <div class="seller-info">
-          <div class="seller-name" id="sellerName">—</div>
-          <div class="seller-meta" id="sellerMeta">—</div>
-          <div class="seller-phone" id="sellerPhone" style="display:none; font-size:.85rem; margin-top:.2rem; color: var(--muted, #7a7a8c);"></div>
-        </div>
-      </div>
-
-      <!-- ACTION BUTTONS -->
-      <div class="action-row">
-        <button class="btn-primary" id="callBtn">📞 Call Seller</button>
-        <button class="btn-primary" id="chatBtn">💬 Chat</button>
-      </div>
-      <div class="action-row secondary">
-        <button class="btn-secondary" id="saveBtn">❤️ Save</button>
-        <button class="btn-secondary report" id="reportBtn">🚩 Report</button>
+      <div id="inboxList" class="inbox-list">
+        <div class="chat-empty">Loading…</div>
       </div>
     </div>
-
   </section>
-
-  <div class="listing-empty" id="listingEmpty" style="display:none; text-align:center; padding:60px 20px;">
-    <p>We couldn't find that listing.</p>
-    <a href="index.html" class="btn-primary">← Back to Marketplace</a>
-  </div>
 
   <footer class="footer">
     <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
@@ -93,29 +46,10 @@
       </a>
   </footer>
 
-  <!-- REPORT MODAL -->
-  <div class="pbm-overlay" id="reportOverlay">
-    <div class="pbm">
-      <h3>Report This Listing</h3>
-      <p class="report-sub">Let us know what's wrong — our team will review it.</p>
-      <select class="report-select" id="reportReason">
-        <option value="">Select a reason</option>
-        <option value="fake">Fake or misleading listing</option>
-        <option value="sold">Already sold</option>
-        <option value="inappropriate">Inappropriate content</option>
-        <option value="other">Other</option>
-      </select>
-      <div class="pbm-btn-row">
-        <button class="pbm-cancel" id="reportCancel">Cancel</button>
-        <button class="pbm-unlock" id="reportSubmit">Submit</button>
-      </div>
-    </div>
-  </div>
-
   <!-- CHAT MODAL -->
   <div class="pbm-overlay" id="chatOverlay">
     <div class="pbm chat-modal">
-      <h3 id="chatModalTitle">Chat with Seller</h3>
+      <h3 id="chatModalTitle">Chat</h3>
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-error" id="chatError" style="display:none;"></div>
       <form class="chat-input-row" id="chatForm">
@@ -127,6 +61,49 @@
   </div>
 
   <style>
+    .inbox-wrap { max-width: 760px; margin: 0 auto; padding: 100px 20px 60px; }
+    .inbox-card { width: 100%; }
+    .inbox-list { display: flex; flex-direction: column; gap: .6rem; }
+    .inbox-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+      padding: .85rem 1rem;
+      border-radius: 14px;
+      background: rgba(122,122,140,0.10);
+      border: 1px solid rgba(244,162,77,0.12);
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+    .inbox-row:hover { background: rgba(244,162,77,0.10); }
+    .inbox-row-main { min-width: 0; }
+    .inbox-row-title { font-weight: 600; font-size: .95rem; display: flex; align-items: center; gap: .5rem; }
+    .inbox-role-tag {
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding: .1rem .5rem;
+      border-radius: 20px;
+      background: rgba(244,162,77,0.18);
+      color: #f4a24d;
+    }
+    .inbox-row-preview {
+      font-size: .82rem;
+      color: var(--muted, #7a7a8c);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: .2rem;
+      max-width: 480px;
+    }
+    .inbox-row-time { font-size: .75rem; color: var(--muted, #7a7a8c); flex-shrink: 0; }
+    .chat-empty {
+      text-align: center;
+      color: var(--muted, #7a7a8c);
+      font-size: .85rem;
+      padding: 1.5rem 0;
+    }
     .chat-modal { display: flex; flex-direction: column; max-height: 80vh; }
     .chat-messages {
       flex: 1;
@@ -154,12 +131,6 @@
       background: linear-gradient(135deg, #f4a24d, #e07b7b);
       color: #0d0f14;
       align-self: flex-end;
-    }
-    .chat-empty {
-      text-align: center;
-      color: var(--muted, #7a7a8c);
-      font-size: .82rem;
-      padding: 1.5rem 0;
     }
     .chat-input-row { display: flex; gap: .5rem; }
     .chat-input {
@@ -212,111 +183,7 @@
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* ===== LOAD LISTING FROM DeltaStore BY ?id= ===== */
-  const params = new URLSearchParams(window.location.search);
-  const petId = params.get('id') || 'seed-1'; // fall back to the sample Golden Retriever
-  let currentPet = null; // shared with the chat handler below
-
-  (async () => {
-    const pet = await DeltaStore.getById(petId);
-    currentPet = pet;
-
-    if (!pet) {
-      document.getElementById('listingWrap').style.display = 'none';
-      document.getElementById('listingEmpty').style.display = 'block';
-      return;
-    }
-
-    document.title = `${pet.name} — Δ Delta Marketplace`;
-    document.getElementById('mainPhoto').textContent = pet.photo;
-    document.getElementById('petTitle').textContent = pet.name;
-    document.getElementById('petPriceOut').textContent = `₹${Number(pet.price).toLocaleString('en-IN')}`;
-    document.getElementById('petLocationOut').textContent = `📍 ${pet.city}`;
-    document.getElementById('specBreed').textContent = pet.breed || '—';
-    document.getElementById('specAge').textContent = pet.age || '—';
-    document.getElementById('specGender').textContent = pet.gender || '—';
-    document.getElementById('specColor').textContent = pet.color || '—';
-    document.getElementById('descText').textContent = pet.description || 'No description provided.';
-    document.getElementById('sellerName').textContent = pet.sellerName || 'Unknown Seller';
-    document.getElementById('sellerMeta').textContent = pet.sellerMeta || '';
-
-    const sellerPhoneEl = document.getElementById('sellerPhone');
-    if (pet.sellerPhone) {
-      sellerPhoneEl.textContent = `📞 ${pet.sellerPhone}`;
-      sellerPhoneEl.style.display = 'block';
-    }
-
-    // gallery: real uploaded photos if the seller added any,
-    // otherwise fall back to the emoji-based placeholder thumbs
-    const mainPhoto = document.getElementById('mainPhoto');
-    const thumbsWrap = document.getElementById('galleryThumbs');
-
-    function setMain(item){
-      if (item.type === 'img') {
-        mainPhoto.style.backgroundImage = `url('${item.src}')`;
-        mainPhoto.style.backgroundSize = 'cover';
-        mainPhoto.style.backgroundPosition = 'center';
-        mainPhoto.textContent = '';
-      } else {
-        mainPhoto.style.backgroundImage = '';
-        mainPhoto.textContent = item.src;
-      }
-    }
-
-    const gallery = (pet.photos && pet.photos.length > 0)
-      ? pet.photos.map(url => ({ type: 'img', src: url }))
-      : [pet.photo, pet.category === 'cat' ? '🐈' : '🐕', pet.category === 'cat' ? '😺' : '🦮']
-          .map(e => ({ type: 'emoji', src: e }));
-
-    thumbsWrap.innerHTML = gallery.map((item, i) => {
-      const active = i === 0 ? ' active' : '';
-      if (item.type === 'img') {
-        return `<div class="thumb${active}" data-type="img" data-src="${item.src}" style="background-image:url('${item.src}');background-size:cover;background-position:center;"></div>`;
-      }
-      return `<div class="thumb${active}" data-type="emoji" data-src="${item.src}">${item.src}</div>`;
-    }).join('');
-
-    thumbsWrap.querySelectorAll('.thumb').forEach(thumb => {
-      thumb.addEventListener('click', () => {
-        thumbsWrap.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-        thumb.classList.add('active');
-        setMain({ type: thumb.dataset.type, src: thumb.dataset.src });
-      });
-    });
-
-    setMain(gallery[0]);
-
-    // save toggle reflects and updates real saved state
-    const saveBtn = document.getElementById('saveBtn');
-    function paintSaveBtn(saved){
-      saveBtn.classList.toggle('saved', saved);
-      saveBtn.textContent = saved ? '❤️ Saved' : '❤️ Save';
-    }
-    paintSaveBtn(await DeltaStore.isSaved(pet.id));
-    saveBtn.addEventListener('click', async () => {
-      saveBtn.disabled = true;
-      const nowSaved = await DeltaStore.toggleSaved(pet.id);
-      paintSaveBtn(nowSaved);
-      saveBtn.disabled = false;
-    });
-  })();
-
-  /* ===== CALL SELLER ===== */
-  document.getElementById('callBtn').addEventListener('click', () => {
-    if (!currentPet) return;
-
-    const rawPhone = currentPet.sellerPhone;
-    if (!rawPhone) {
-      alert("This seller hasn't listed a phone number yet. Try the Chat option instead.");
-      return;
-    }
-
-    // Strip anything that isn't a digit or a leading +
-    const cleanPhone = rawPhone.trim().replace(/(?!^\+)[^\d]/g, '');
-    window.location.href = `tel:${cleanPhone}`;
-  });
-
-  /* ===== CHAT (real, Firestore-backed) ===== */
+  /* ===== CHAT MODAL PLUMBING (shared with listing.html) ===== */
   const chatOverlay = document.getElementById('chatOverlay');
   const chatMessagesEl = document.getElementById('chatMessages');
   const chatError = document.getElementById('chatError');
@@ -327,6 +194,18 @@
   let activeChatId = null;
   let unsubChat = null;
   let myUid = null;
+
+  function timeAgo(ms){
+    if (!ms) return '';
+    const diff = Date.now() - ms;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+  }
 
   function renderMessages(messages){
     if (messages.length === 0) {
@@ -347,28 +226,28 @@
     activeChatId = null;
   }
 
-  document.getElementById('chatBtn').addEventListener('click', async () => {
-    if (!currentPet) return;
+  async function openChat(chat){
     chatError.style.display = 'none';
     chatMessagesEl.innerHTML = '<div class="chat-empty">Loading…</div>';
     chatInput.value = '';
-    document.getElementById('chatModalTitle').textContent = `Chat with ${currentPet.sellerName || 'Seller'}`;
+    const otherPartyLabel = chat.role === 'seller' ? 'Buyer' : (chat.sellerName || 'Seller');
+    document.getElementById('chatModalTitle').textContent = `${chat.petName || 'Chat'} · ${otherPartyLabel}`;
     chatOverlay.classList.add('open');
 
     try {
       myUid = await DeltaStore.getCurrentUid();
-      activeChatId = await DeltaStore.getOrCreateChat(currentPet.id, currentPet.sellerId, currentPet.name, currentPet.sellerName);
+      activeChatId = chat.id;
       chatInput.disabled = false;
       chatSendBtn.disabled = false;
       unsubChat = DeltaStore.onChatMessages(activeChatId, renderMessages);
     } catch (err) {
       chatMessagesEl.innerHTML = '';
-      chatError.textContent = err.message || 'Chat is unavailable for this listing right now.';
+      chatError.textContent = err.message || 'Chat is unavailable right now.';
       chatError.style.display = 'block';
       chatInput.disabled = true;
       chatSendBtn.disabled = true;
     }
-  });
+  }
 
   document.getElementById('chatClose').addEventListener('click', closeChat);
 
@@ -383,22 +262,54 @@
       await DeltaStore.sendMessage(activeChatId, text);
     } catch (err) {
       console.error('Failed to send message:', err);
-      chatInput.value = text; // give it back so nothing's lost
+      chatInput.value = text;
     }
     chatSendBtn.disabled = false;
     chatInput.focus();
   });
 
-  /* ===== REPORT MODAL ===== */
-  const reportOverlay = document.getElementById('reportOverlay');
-  document.getElementById('reportBtn').addEventListener('click', () => reportOverlay.classList.add('open'));
-  document.getElementById('reportCancel').addEventListener('click', () => reportOverlay.classList.remove('open'));
-  document.getElementById('reportSubmit').addEventListener('click', () => {
-    const reason = document.getElementById('reportReason').value;
-    if (!reason) { alert('Please select a reason.'); return; }
-    reportOverlay.classList.remove('open');
-    alert('Thanks — this listing has been reported.');
-  });
+  /* ===== LOAD INBOX ===== */
+  const inboxList = document.getElementById('inboxList');
+
+  (async () => {
+    try {
+      myUid = await DeltaStore.getCurrentUid();
+      DeltaStore.onMyChats(chats => {
+        if (chats.length === 0) {
+          inboxList.innerHTML = '<div class="chat-empty">No messages yet. Chats you start, or receive on your listings, will show up here.</div>';
+          return;
+        }
+        inboxList.innerHTML = chats.map(chat => {
+          const roleTag = chat.role === 'seller' ? 'Selling' : 'Buying';
+          const otherPartyLabel = chat.role === 'seller' ? 'Buyer' : (chat.sellerName || 'Seller');
+          const preview = chat.lastMessage
+            ? (chat.lastSenderId === myUid ? `You: ${chat.lastMessage}` : chat.lastMessage)
+            : 'No messages yet';
+          const safePreview = preview.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `
+            <div class="inbox-row" data-chat-id="${chat.id}">
+              <div class="inbox-row-main">
+                <div class="inbox-row-title">
+                  <span class="inbox-role-tag">${roleTag}</span>
+                  ${chat.petName || 'Listing'} · ${otherPartyLabel}
+                </div>
+                <div class="inbox-row-preview">${safePreview}</div>
+              </div>
+              <div class="inbox-row-time">${timeAgo(chat.updatedAt)}</div>
+            </div>`;
+        }).join('');
+
+        inboxList.querySelectorAll('.inbox-row').forEach(row => {
+          row.addEventListener('click', () => {
+            const chat = chats.find(c => c.id === row.dataset.chatId);
+            if (chat) openChat(chat);
+          });
+        });
+      });
+    } catch (err) {
+      inboxList.innerHTML = `<div class="chat-empty">${err.message || 'Could not load messages right now.'}</div>`;
+    }
+  })();
   }); // end DOMContentLoaded
 </script>
 

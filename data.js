@@ -292,7 +292,7 @@ const DeltaStore = (() => {
   // current user (as buyer) and the listing's seller. Throws a
   // user-friendly error if the listing has no seller on file (posted
   // before chat existed) or if you're trying to message your own listing.
-  async function getOrCreateChat(listingId, sellerId, petName) {
+  async function getOrCreateChat(listingId, sellerId, petName, sellerName) {
     await ready;
     if (!listingId) throw new Error('Missing listing id.');
     if (!sellerId) throw new Error("This listing doesn't have a seller on file yet, so chat isn't available for it.");
@@ -306,6 +306,7 @@ const DeltaStore = (() => {
         petName: petName || '',
         buyerId: uid,
         sellerId,
+        sellerName: sellerName || '',
         createdAt: Date.now(),
         updatedAt: Date.now(),
         lastMessage: '',
@@ -313,6 +314,47 @@ const DeltaStore = (() => {
       });
     }
     return id;
+  }
+
+  // Real-time subscription to every chat thread the current user is
+  // part of, as either buyer or seller. Firestore can't OR two
+  // different-field queries in one call, so this runs both and merges
+  // client-side. This is what powers the inbox — without it, sellers
+  // had messages sitting in Firestore with no page to ever see them.
+  function onMyChats(callback) {
+    let unsubBuyer = () => {};
+    let unsubSeller = () => {};
+    let buyerChats = [];
+    let sellerChats = [];
+    let buyerReady = false;
+    let sellerReady = false;
+
+    function emit() {
+      if (!buyerReady || !sellerReady) return;
+      const map = new Map();
+      buyerChats.forEach(c => map.set(c.id, { ...c, role: 'buyer' }));
+      sellerChats.forEach(c => map.set(c.id, { ...c, role: 'seller' }));
+      const merged = Array.from(map.values()).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+      callback(merged);
+    }
+
+    ready.then(() => {
+      unsubBuyer = db.collection(CHATS).where('buyerId', '==', uid)
+        .onSnapshot(snap => {
+          buyerChats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          buyerReady = true;
+          emit();
+        }, err => console.error('DeltaStore onMyChats (buyer) error:', err));
+
+      unsubSeller = db.collection(CHATS).where('sellerId', '==', uid)
+        .onSnapshot(snap => {
+          sellerChats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          sellerReady = true;
+          emit();
+        }, err => console.error('DeltaStore onMyChats (seller) error:', err));
+    });
+
+    return () => { unsubBuyer(); unsubSeller(); };
   }
 
   async function sendMessage(chatId, text) {
@@ -376,6 +418,6 @@ const DeltaStore = (() => {
 
   return {
     ready, getAll, getById, add, getSaved, isSaved, toggleSaved, onListingsChange, newId, uploadPhotos,
-    getCurrentUid, getOrCreateChat, sendMessage, onChatMessages
+    getCurrentUid, getOrCreateChat, sendMessage, onChatMessages, onMyChats
   };
 })();
