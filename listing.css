@@ -54,6 +54,7 @@ html, body {
 }
 .nav-links a:hover { color: var(--accent); }
 .nav-icon { display: none; }
+.nav-messages .nav-icon { display: none; font-size: 1.15rem; line-height: 1; }
 .nav-links .nav-cta {
   background: rgba(244,162,77,0.12);
   border: 1px solid rgba(244,162,77,0.45);
@@ -62,9 +63,10 @@ html, body {
   border-radius: 40px;
 }
 @media(max-width: 700px){
-  .nav-links span.nav-text{ display:none; }
-  .nav-links .nav-icon{ display:inline; font-size: 1.15rem; }
+  .nav-links .nav-hide-mobile{ display:none; }
   .nav-links{ gap: 1rem; }
+  .nav-messages .nav-text{ display:none; }
+  .nav-messages .nav-icon{ display:inline; }
 }
 
 /* ===== LAYOUT ===== */
