@@ -132,6 +132,17 @@ img{ max-width:100%; display:block; }
   font-weight:900;
   margin:.5rem 0 .7rem;
 }
+.founder-quote{
+  position:relative;
+  margin:0 0 1.4rem;
+  padding:.2rem 0 .2rem 1.1rem;
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+  font-size:1.1rem;
+  color:var(--gold);
+  border-left:2px solid var(--gold);
+  line-height:1.7;
+}
 .about-hero p.lede{
   position:relative;
   max-width:640px;
@@ -142,7 +153,10 @@ img{ max-width:100%; display:block; }
 
 /* ---------- PROFILE ---------- */
 .profile-section{
-  padding:0 6vw 6rem;
+  padding:0 6vw 2.4rem;
+}
+.profile-section:last-of-type{
+  padding-bottom:6rem;
 }
 .profile-card{
   max-width:1120px;
