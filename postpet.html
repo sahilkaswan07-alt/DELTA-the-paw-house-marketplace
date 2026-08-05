@@ -7,6 +7,33 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="postpet.css">
+<style>
+  /* Adoption/Sell mode toggle — inline so it works regardless of postpet.css contents */
+  .mode-toggle { display: flex; justify-content: center; gap: .7rem; margin-bottom: 1.6rem; flex-wrap: wrap; }
+  .mode-btn {
+    padding: .55rem 1.3rem;
+    border-radius: 40px;
+    border: 1px solid rgba(244,162,77,0.3);
+    background: rgba(244,162,77,0.06);
+    color: #f4a24d;
+    font-family: 'Inter', sans-serif;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .mode-btn:hover { background: rgba(244,162,77,0.15); }
+  .mode-btn.active {
+    background: linear-gradient(135deg, #f4a24d, #e07b7b);
+    color: #0d0f14;
+    border-color: transparent;
+  }
+  #modeAdoptBtn.active {
+    background: linear-gradient(135deg, #c96fd0, #e07b7b);
+    color: #0d0f14;
+  }
+  .field-hint { font-size: .74rem; color: #7a7a8c; margin-top: .35rem; }
+</style>
 </head>
 <body>
 
@@ -17,20 +44,27 @@
     <a href="home.html" class="nav-logo">Δ Delta</a>
     <ul class="nav-links">
       <li><a href="home.html"><span class="nav-text">Home</span></a></li>
-      <li><a href="delta.html"><span class="nav-text">Marketplace</span></a></li>
+      <li><a href="home.html"><span class="nav-text">Marketplace</span></a></li>
       <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="adoption.html"><span class="nav-text">Adopt</span></a></li>
       <li><a href="home.html" class="nav-cta">← Back</a></li>
     </ul>
   </nav>
 
   <section class="form-wrap">
 
-    <div class="premium-badge">
+    <div class="premium-badge" id="formBadge">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
-      Sell on Delta
+      <span id="formBadgeText">Sell on Delta</span>
     </div>
-    <h1 class="brand">Post Your Pet</h1>
-    <p class="tagline">Upload Photos → Add Details → Publish</p>
+    <h1 class="brand" id="formTitle">Post Your Pet</h1>
+    <p class="tagline" id="formTagline">Upload Photos → Add Details → Publish</p>
+
+    <!-- LISTING MODE TOGGLE -->
+    <div class="mode-toggle" id="modeToggle" role="group" aria-label="Listing type">
+      <button type="button" class="mode-btn" id="modeSaleBtn" data-mode="sale">💰 Sell / Rehome</button>
+      <button type="button" class="mode-btn" id="modeAdoptBtn" data-mode="adoption">💜 Free Adoption</button>
+    </div>
 
     <!-- STEP TRACKER -->
     <div class="step-tracker">
@@ -101,8 +135,9 @@
             <input type="text" id="petColor" placeholder="e.g. Golden">
           </div>
           <div class="field">
-            <label>Price (₹)</label>
+            <label id="petPriceLabel">Price (₹)</label>
             <input type="number" id="petPrice" placeholder="e.g. 18000">
+            <p class="field-hint" id="petPriceHint" style="display:none;">Leave at 0 for a completely free adoption, or set a small rehoming fee.</p>
           </div>
           <div class="field">
             <label>City</label>
@@ -156,11 +191,11 @@
       <!-- SUCCESS STATE -->
       <div class="form-panel" id="panel-success">
         <div class="success-icon">🎉</div>
-        <h3 class="panel-title">Listing Published!</h3>
-        <p class="panel-sub">Your pet is now live on the Delta Marketplace.</p>
+        <h3 class="panel-title" id="successTitle">Listing Published!</h3>
+        <p class="panel-sub" id="successSub">Your pet is now live on the Delta Marketplace.</p>
         <div class="form-nav center">
-          <a href="delta.html" class="btn-secondary">Marketplace</a>
-          <a href="index.html" id="viewMyListingLink" class="btn-primary">View My Listing</a>
+          <a href="home.html" id="successBrowseLink" class="btn-secondary">Marketplace</a>
+          <a href="home.html" id="viewMyListingLink" class="btn-primary">View My Listing</a>
         </div>
       </div>
 
@@ -204,6 +239,41 @@
   window.addEventListener('resize',()=>{ resize(); init(); });
 
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* =====================================================================
+     LISTING MODE — Sell (marketplace, has a price) vs Adoption (free /
+     small rehoming fee). Defaults to adoption if the page was opened via
+     adoption.html's "+ List for Adoption" link (postpet.html?type=adoption).
+     The chosen mode is written to Firestore as listing.listingType, which
+     home.html and adoption.html both use to sort listings into the right
+     page.
+     ===================================================================== */
+  let postMode = (new URLSearchParams(location.search).get('type') === 'adoption') ? 'adoption' : 'sale';
+
+  const modeSaleBtn = document.getElementById('modeSaleBtn');
+  const modeAdoptBtn = document.getElementById('modeAdoptBtn');
+  const formBadgeText = document.getElementById('formBadgeText');
+  const formTagline = document.getElementById('formTagline');
+  const petPriceLabel = document.getElementById('petPriceLabel');
+  const petPriceHint = document.getElementById('petPriceHint');
+  const petPriceInput = document.getElementById('petPrice');
+
+  function applyMode(){
+    const isAdoption = postMode === 'adoption';
+    modeSaleBtn.classList.toggle('active', !isAdoption);
+    modeAdoptBtn.classList.toggle('active', isAdoption);
+    formBadgeText.textContent = isAdoption ? 'Adoption Portal' : 'Sell on Delta';
+    formTagline.textContent = isAdoption
+      ? 'Upload Photos → Add Details → Publish for Adoption'
+      : 'Upload Photos → Add Details → Publish';
+    petPriceLabel.textContent = isAdoption ? 'Adoption Fee (₹)' : 'Price (₹)';
+    petPriceHint.style.display = isAdoption ? 'block' : 'none';
+    if (isAdoption && petPriceInput.value === '') petPriceInput.value = 0;
+  }
+
+  modeSaleBtn.addEventListener('click', () => { postMode = 'sale'; applyMode(); });
+  modeAdoptBtn.addEventListener('click', () => { postMode = 'adoption'; applyMode(); });
+  applyMode();
 
   /* ===== PHOTO UPLOAD PREVIEW =====
      Placed early and kept independent of DeltaStore so thumbnail
@@ -294,7 +364,13 @@
     const category = document.getElementById('petCategory').value;
 
     document.getElementById('previewName').textContent = name;
-    document.getElementById('previewPrice').textContent = price ? `₹${Number(price).toLocaleString('en-IN')}` : 'Price not set';
+    if (postMode === 'adoption') {
+      document.getElementById('previewPrice').textContent = (price && Number(price) > 0)
+        ? `Adoption Fee ₹${Number(price).toLocaleString('en-IN')}`
+        : 'Free Adoption';
+    } else {
+      document.getElementById('previewPrice').textContent = price ? `₹${Number(price).toLocaleString('en-IN')}` : 'Price not set';
+    }
     document.getElementById('previewMeta').textContent = `${breed} · 📍 ${city}`;
     document.getElementById('previewPhoto').textContent = category === 'cat' ? '🐱' : category === 'dog' ? '🐶' : '🐾';
 
@@ -354,11 +430,20 @@
         category: category,
         description: document.getElementById('petDesc').value.trim(),
         photos: photoURLs,
-        sellerPhone: sellerPhone
+        sellerPhone: sellerPhone,
+        listingType: postMode
       });
 
       // point the success screen's "View My Listing" button at the real new listing
       document.getElementById('viewMyListingLink').href = `listing.html?id=${encodeURIComponent(newListing.id)}`;
+
+      const isAdoption = postMode === 'adoption';
+      document.getElementById('successTitle').textContent = isAdoption ? 'Listing Published! 💜' : 'Listing Published!';
+      document.getElementById('successSub').textContent = isAdoption
+        ? 'Your pet is now live on the Delta Adoption Portal.'
+        : 'Your pet is now live on the Delta Marketplace.';
+      document.getElementById('successBrowseLink').href = isAdoption ? 'adoption.html' : 'home.html';
+      document.getElementById('successBrowseLink').textContent = isAdoption ? 'Adoption Portal' : 'Marketplace';
 
       document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('panel-success').classList.add('active');

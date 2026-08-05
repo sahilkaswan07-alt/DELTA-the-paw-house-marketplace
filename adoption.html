@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Δ Delta — Paw House Marketplace</title>
+<title>Δ Delta — Adoption Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="home.css">
@@ -31,13 +31,13 @@
   <section class="delta-hero">
     <div class="premium-badge">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
-      Delta Marketplace
+      Adoption Portal
     </div>
-    <h1 class="brand">Δ DELTA</h1>
-    <p class="tagline">The Paw House Marketplace — Buy • Sell</p>
+    <h1 class="brand">Δ ADOPT</h1>
+    <p class="tagline">Give a rescued pet a forever home</p>
 
     <div class="search-wrap">
-      <input type="text" class="search-bar" id="searchInput" placeholder="🔍 Search pets...">
+      <input type="text" class="search-bar" id="searchInput" placeholder="🔍 Search adoptable pets...">
     </div>
 
     <div class="filters">
@@ -47,22 +47,25 @@
     </div>
   </section>
 
+  <div class="adopt-banner">
+    <strong>🐾 Adopt, don't shop.</strong> Every pet below is looking for a loving home — no marketplace price, just a home check and a good match.
+  </div>
+
   <!-- LISTINGS -->
   <section class="pets-section" id="listings">
     <div class="sec-head">
-      <h2>Latest Listings 🐾</h2>
-      <p>Fresh pets looking for their forever home.</p>
+      <h2>Pets Waiting for a Home 💜</h2>
+      <p>Reach out and start the adoption process today.</p>
     </div>
 
     <div class="pets-grid" id="listingGrid">
-      <!-- cards are rendered here by JS from DeltaStore -->
       <div class="pets-empty" id="emptyState" style="display:none;">
-        No pets match your search — try a different breed or filter.
+        No adoptable pets match your search right now — check back soon.
       </div>
     </div>
   </section>
 
-  <a href="postpet.html" class="post-pet-fab">+ Post Pet</a>
+  <a href="postpet.html?type=adoption" class="post-pet-fab">+ List for Adoption</a>
 
   <footer class="footer">
     <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
@@ -80,7 +83,7 @@
   <script src="cloudinaryconfig.js"></script>
   <script src="data.js"></script>
 <script>
-  /* ===== BACKGROUND CANVAS (unchanged) ===== */
+  /* ===== BACKGROUND CANVAS (identical to home.html) ===== */
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
   let W, H;
@@ -119,10 +122,22 @@
     });
   });
 
-  /* ===== RENDER LISTINGS FROM DeltaStore (Firestore, real-time) ===== */
+  /* =====================================================================
+     RENDER ADOPTION LISTINGS FROM DeltaStore (Firestore, real-time)
+     -----------------------------------------------------------------
+     postpet.html now has a Sell / Free Adoption toggle that writes
+     listing.listingType = 'adoption' on the Firestore document, which
+     is the source of truth here. Older/seed listings created before
+     this existed won't have that field, so as a fallback we also
+     treat a $0 price as adoptable.
+     ===================================================================== */
   const grid = document.getElementById('listingGrid');
   const emptyState = document.getElementById('emptyState');
   let allPets = [];
+
+  function isAdoptable(pet){
+    return pet.listingType === 'adoption' || Number(pet.price) === 0;
+  }
 
   function photoBlockHTML(pet){
     if (pet.photos && pet.photos.length > 0) {
@@ -132,6 +147,11 @@
   }
 
   function cardHTML(pet, saved){
+    const feeChip = Number(pet.price) > 0
+      ? `<span class="pet-chip price">Fee ₹${Number(pet.price).toLocaleString('en-IN')}</span>`
+      : `<span class="pet-chip free">Free Adoption</span>`;
+    const ageChip = pet.age ? `<span class="pet-chip age">${pet.age}</span>` : '';
+
     return `
       <div class="pet-box" data-id="${pet.id}" data-type="${pet.category}" data-name="${(pet.name||'').toLowerCase()} ${(pet.breed||'').toLowerCase()}">
         ${photoBlockHTML(pet)}
@@ -139,10 +159,11 @@
           <div class="pet-name">${pet.name}</div>
           <div class="pet-breed">📍 ${pet.city}</div>
           <div class="pet-meta">
-            <span class="pet-chip price">₹${Number(pet.price).toLocaleString('en-IN')}</span>
+            ${feeChip}
+            ${ageChip}
           </div>
           <div class="listing-actions">
-            <button class="lock-btn view-btn" data-id="${pet.id}">View ${pet.name}</button>
+            <button class="lock-btn adopt-btn view-btn" data-id="${pet.id}">Adopt ${pet.name}</button>
             <button class="save-toggle${saved ? ' saved' : ''}" data-id="${pet.id}">${saved ? '❤️ Saved' : '❤️ Save'}</button>
           </div>
         </div>
@@ -151,8 +172,10 @@
 
   async function renderGrid(){
     const savedIds = await DeltaStore.getSaved();
+    const adoptablePets = allPets.filter(isAdoptable);
+
     grid.querySelectorAll('.pet-box').forEach(el => el.remove());
-    grid.insertAdjacentHTML('afterbegin', allPets.map(p => cardHTML(p, savedIds.includes(p.id))).join(''));
+    grid.insertAdjacentHTML('afterbegin', adoptablePets.map(p => cardHTML(p, savedIds.includes(p.id))).join(''));
 
     grid.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -202,11 +225,9 @@
   searchInput.addEventListener('input', applyFilters);
 
   // Live-subscribes to Firestore: fires now, and again whenever
-  // any device (yours or a buyer's) publishes a new pet.
-  // Free-adoption listings (listingType === 'adoption') live on the
-  // Adoption Portal instead, so they're excluded from this grid.
+  // any device publishes a new pet — adoption filtering happens client-side.
   DeltaStore.onListingsChange(pets => {
-    allPets = pets.filter(p => p.listingType !== 'adoption');
+    allPets = pets;
     renderGrid();
   });
 </script>
