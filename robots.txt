@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Private / logged-in user pages - keep out of search results
+Disallow: /inbox.html
+Disallow: /saved.html
+
+Sitemap: https://deltapawhouse.in/sitemap.xml
