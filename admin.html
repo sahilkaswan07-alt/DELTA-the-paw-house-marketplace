@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verification Requests — Δ Delta Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0f14; --card:#13151c; --text:#e8e2d5; --muted:#7a7a8c;
+    --accent:#f4a24d; --accent2:#e07b7b;
+    --pending:#e0b64d; --review:#4da6e0; --moreinfo:#e0823d; --approved:#3dbd6d; --rejected:#e05656;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;padding:0 0 60px;}
+  .wrap{max-width:920px;margin:0 auto;padding:32px 18px;}
+  h1{font-family:'Playfair Display',serif;font-size:1.7rem;margin:0 0 4px;}
+  .sub{color:var(--muted);font-size:.9rem;margin:0 0 22px;}
+  .note{background:rgba(244,162,77,.08);border:1px solid rgba(244,162,77,.25);border-radius:10px;padding:10px 14px;font-size:.82rem;color:var(--muted);margin-bottom:20px;}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;}
+  th,td{text-align:left;padding:12px 14px;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.06);}
+  th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;}
+  tr:last-child td{border-bottom:none;}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:600;}
+  .review-btn{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--text);border-radius:20px;padding:6px 14px;font-size:.8rem;cursor:pointer;}
+  .review-btn:hover{border-color:var(--accent);}
+  .empty{text-align:center;color:var(--muted);padding:40px 0;}
+
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:10;}
+  .overlay.open{display:flex;}
+  .modal{background:var(--card);border-radius:16px;padding:24px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;}
+  .modal h2{font-family:'Playfair Display',serif;margin:0 0 4px;}
+  .modal .m-sub{color:var(--muted);font-size:.85rem;margin:0 0 16px;}
+  .section{margin-bottom:16px;}
+  .section h3{font-size:.85rem;color:var(--muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:.03em;}
+  .check-line{font-size:.9rem;padding:2px 0;}
+  .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .thumbs img,.thumbs video{width:84px;height:84px;object-fit:cover;border-radius:8px;}
+  textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0d0f14;color:var(--text);font-family:inherit;font-size:.88rem;min-height:70px;resize:vertical;}
+  .btn-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+  .btn{flex:1;min-width:130px;border:none;border-radius:10px;padding:11px;font-weight:600;font-size:.85rem;cursor:pointer;color:#0d0f14;}
+  .btn-approve{background:var(--approved);}
+  .btn-moreinfo{background:var(--moreinfo);}
+  .btn-reject{background:var(--rejected);}
+  .btn-close{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--text);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Verification Requests</h1>
+  <p class="sub">Δ Delta Paw House Admin</p>
+  <div class="note">
+    This page has no login of its own — anyone with the link can approve/reject.
+    It's fine for you to test with, but before sharing this URL, add Firestore
+    security rules (or a simple password gate) so only your team can write
+    <code>status</code> on the <code>verifications</code> collection.
+  </div>
+
+  <table>
+    <thead><tr><th>Pet</th><th>Seller</th><th>Status</th><th></th></tr></thead>
+    <tbody id="reqTableBody"></tbody>
+  </table>
+  <div class="empty hidden" id="emptyState">No verification requests yet.</div>
+</div>
+
+<div class="overlay" id="modalOverlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<script src="firebaseconfig.js"></script>
+<script src="cloudinaryconfig.js"></script>
+<script src="verification.js"></script>
+<script>
+(async () => {
+  if (typeof DeltaVerify === 'undefined') {
+    document.querySelector('.wrap').innerHTML =
+      '<h1>Verification Requests</h1><p style="color:#e05656;">⚠️ verification.js failed to load. ' +
+      'Check that verification.js is uploaded to the same folder as admin.html on your server, ' +
+      'and that the &lt;script src="verification.js"&gt; tag is present above.</p>';
+    return;
+  }
+  await DeltaVerify.ensureUid();
+  const tbody = document.getElementById('reqTableBody');
+  const empty = document.getElementById('emptyState');
+  const overlay = document.getElementById('modalOverlay');
+  const modalBody = document.getElementById('modalBody');
+  let currentList = [];
+
+  function badge(status){
+    const m = DeltaVerify.STATUS_META[status] || DeltaVerify.STATUS_META.none;
+    return `<span class="badge" style="background:${m.color}22;color:${m.color};">${m.dot} ${m.label}</span>`;
+  }
+
+  function renderTable(list){
+    currentList = list;
+    tbody.innerHTML = '';
+    empty.classList.toggle('hidden', list.length > 0);
+    list.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.petName || r.petId}</td>
+        <td>${(r.seller && r.seller.name) || '—'}</td>
+        <td>${badge(r.status)}</td>
+        <td><button class="review-btn" data-id="${r.id}">Review</button></td>`;
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll('.review-btn').forEach(btn => {
+      btn.addEventListener('click', () => openModal(btn.dataset.id));
+    });
+  }
+
+  function mediaThumb(url){
+    if (!url) return '';
+    const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(url) || url.includes('/video/');
+    return isVideo
+      ? `<video src="${url}" controls muted></video>`
+      : `<img src="${url}" alt="">`;
+  }
+
+  function openModal(id){
+    const r = currentList.find(x => x.id === id);
+    if (!r) return;
+    const seller = r.seller || {};
+    const pet = r.pet || {};
+    const docs = r.docs || { type: 'none', files: [] };
+
+    modalBody.innerHTML = `
+      <h2>${r.petName || r.petId} — Verification</h2>
+      <p class="m-sub">${badge(r.status)}</p>
+
+      <div class="section">
+        <h3>Seller</h3>
+        <div class="check-line">${seller.mobileVerified ? '✓' : '✗'} Name — ${seller.name || '—'}</div>
+        <div class="check-line">${seller.mobileVerified ? '✓' : '✗'} Mobile — ${seller.mobile || '—'}</div>
+        <div class="check-line">${seller.aadhaarVerified && seller.aadhaarLast4 ? '✓ Aadhaar — ending ' + seller.aadhaarLast4 : '✗ Aadhaar — not provided'}</div>
+        <div class="check-line">${seller.email ? '✓ Email — ' + seller.email : '— No email provided'}</div>
+      </div>
+
+      <div class="section">
+        <h3>Pet</h3>
+        <div class="check-line">${(pet.photos||[]).filter(Boolean).length >= 3 ? '✓' : '✗'} Photos</div>
+        <div class="check-line">${pet.video ? '✓' : '✗'} Video</div>
+        <div class="thumbs">${(pet.photos||[]).map(mediaThumb).join('')}${mediaThumb(pet.video)}</div>
+      </div>
+
+      <div class="section">
+        <h3>Documents</h3>
+        <div class="check-line">${docs.type === 'none' ? 'None submitted' : `✓ ${docs.type}`}</div>
+        <div class="thumbs">${(docs.files||[]).map(mediaThumb).join('')}</div>
+      </div>
+
+      <div class="section">
+        <h3>Note to seller (used for "More Info" or shown internally on Reject)</h3>
+        <textarea id="adminNoteInput" placeholder="e.g. Please upload a clearer veterinary record.">${r.adminNote || ''}</textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-approve" id="approveBtn">🟢 Approve</button>
+        <button class="btn btn-moreinfo" id="moreInfoBtn">🟠 More Info</button>
+        <button class="btn btn-reject" id="rejectBtn">🔴 Reject</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-close" id="closeModalBtn">Close</button>
+      </div>`;
+
+    overlay.classList.add('open');
+    document.getElementById('closeModalBtn').addEventListener('click', () => overlay.classList.remove('open'));
+    document.getElementById('approveBtn').addEventListener('click', () => decide(id, 'approved'));
+    document.getElementById('moreInfoBtn').addEventListener('click', () => decide(id, 'moreinfo'));
+    document.getElementById('rejectBtn').addEventListener('click', () => decide(id, 'rejected'));
+  }
+
+  async function decide(id, decision){
+    const note = document.getElementById('adminNoteInput').value.trim();
+    await DeltaVerify.adminDecision(id, decision, note);
+    overlay.classList.remove('open');
+  }
+
+  DeltaVerify.onAllRequests(renderTable);
+})();
+</script>
+</body>
+</html>

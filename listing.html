@@ -39,13 +39,26 @@
 
     <!-- DETAILS -->
     <div class="details-card">
-      <div class="premium-badge">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
-        Verified Listing
+      <div id="verifyBadgeWrap" style="display:none;">
+        <span class="verify-badge-listing" id="verifyBadgeListing"></span>
+        <a href="#" id="viewVerificationLink" style="display:none; margin-left:8px; font-size:.82rem;">View Verification</a>
+        <div id="verifyDetails" style="display:none; margin-top:8px; font-size:.85rem; color:var(--muted,#7a7a8c);"></div>
       </div>
 
+      <!-- Seller-only entry point into the verification flow — shown only to the
+           listing's own seller, and hidden once the listing is already approved. -->
+      <a href="#" id="sellerVerifyLink" class="btn-primary"
+         style="display:none; margin:10px 0 4px; text-decoration:none; text-align:center; background:linear-gradient(135deg,#3dbd6d,#4da6e0);">
+        🛡️ Verify This Pet
+      </a>
+
       <h1 class="pet-title" id="petTitle">—</h1>
-      <p class="pet-price" id="petPriceOut">—</p>
+      <div class="price-row">
+        <p class="pet-price" id="petPriceOut">—</p>
+        <button class="safety-btn" id="safetyBtn" aria-label="Safety information" title="Safety information">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="13"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </button>
+      </div>
       <p class="pet-location" id="petLocationOut">—</p>
 
       <div class="spec-grid">
@@ -127,7 +140,37 @@
     </div>
   </div>
 
+  <!-- SAFETY NOTICE MODAL -->
+  <div class="pbm-overlay" id="safetyOverlay">
+    <div class="pbm safety-modal">
+      <h3>⚠️ IMPORTANT SAFETY MESSAGE</h3>
+      <p>अगर कोई fake seller या fraudulent person Delta Paw House पर fake listing या misleading information पोस्ट करता है, तो ऐसी activity की जानकारी मिलने पर Delta Paw House की team उचित action लेने का प्रयास करेगी।</p>
+      <p>लेकिन किसी seller को personally verify किए बिना, केवल online information के आधार पर payment करना buyer की अपनी responsibility है।</p>
+
+      <div class="safety-alert">
+        <p class="safety-alert-title">🚨 इसलिए हमेशा सावधान रहें:</p>
+        <p>Pet को personally देखें, seller से properly बात करें, documents/details verify करें और payment करने से पहले पूरी तरह संतुष्ट हों।</p>
+        <p>Delta Paw House किसी buyer द्वारा seller को voluntarily किए गए payment, advance payment, या transaction से होने वाले financial loss की responsibility नहीं लेता।</p>
+        <p><strong>Never send money blindly.</strong></p>
+      </div>
+
+      <p class="safety-tagline">Verify First • Pay Safely • Stay Alert 🐾</p>
+
+      <div class="safety-footer">
+        <span>Founder: Dr. Sahil Choudhary</span>
+        <span>CEO: Anil Choudhary</span>
+      </div>
+
+      <button class="pbm-cancel" id="safetyClose" style="margin-top:1rem; width:100%;">Close</button>
+    </div>
+  </div>
+
   <style>
+    .verify-badge-listing {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:600;
+    }
+    #viewVerificationLink { color: var(--accent, #f4a24d); text-decoration:none; cursor:pointer; }
     .chat-modal { display: flex; flex-direction: column; max-height: 80vh; }
     .chat-messages {
       flex: 1;
@@ -187,6 +230,7 @@
   <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js" defer></script>
   <script src="firebaseconfig.js" defer></script>
   <script src="cloudinaryconfig.js" defer></script>
+  <script src="verification.js" defer></script>
   <script src="data.js" defer></script>
 <script defer>
   document.addEventListener('DOMContentLoaded', () => {
@@ -303,6 +347,69 @@
 
     setMain(gallery[0]);
 
+    // ===== seller-only "Verify This Pet" entry point =====
+    let isOwner = false;
+    try {
+      const myUid = await DeltaStore.getCurrentUid();
+      isOwner = !!(myUid && pet.sellerId && myUid === pet.sellerId);
+    } catch (e) { /* not signed in / uid unavailable — just keep the button hidden */ }
+
+    const sellerVerifyLink = document.getElementById('sellerVerifyLink');
+    if (isOwner) {
+      sellerVerifyLink.href = `verify.html?id=${encodeURIComponent(pet.id)}`;
+    }
+
+    // ===== verification badge (color = status, per home.html legend) =====
+    if (typeof DeltaVerify !== 'undefined') {
+      DeltaVerify.onRequest(pet.id, (req) => {
+        const wrap = document.getElementById('verifyBadgeWrap');
+        const badgeEl = document.getElementById('verifyBadgeListing');
+        const link = document.getElementById('viewVerificationLink');
+        const details = document.getElementById('verifyDetails');
+        const status = req && req.status;
+
+        // Seller sees the CTA whenever their own listing isn't approved yet
+        // (whether verification hasn't started, or is pending/needs info/was rejected).
+        if (isOwner) {
+          if (status === 'approved') {
+            sellerVerifyLink.style.display = 'none';
+          } else {
+            sellerVerifyLink.style.display = 'block';
+            sellerVerifyLink.textContent = status ? '🛡️ Continue Verification' : '🛡️ Verify This Pet';
+          }
+        }
+
+        const visible = ['pending', 'review', 'moreinfo', 'approved', 'rejected'];
+        if (!status || !visible.includes(status)) { wrap.style.display = 'none'; return; }
+
+        const meta = DeltaVerify.STATUS_META[status];
+        wrap.style.display = 'block';
+        badgeEl.style.background = meta.color + '22';
+        badgeEl.style.color = meta.color;
+        badgeEl.style.border = `1px solid ${meta.color}66`;
+        badgeEl.textContent = `${meta.dot} ${status === 'approved' ? 'Delta Paw House Verified' : meta.label}`;
+
+        if (status === 'approved') {
+          link.style.display = 'inline';
+          const when = req.reviewedAt && req.reviewedAt.toDate
+            ? req.reviewedAt.toDate().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+            : '';
+          link.onclick = (e) => {
+            e.preventDefault();
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+            details.innerHTML = `
+              <strong>What Delta Paw House verified</strong><br>
+              ✓ Seller mobile · ✓ Seller identity · ✓ Pet photos/video
+              ${req.docs && req.docs.type !== 'none' ? `<br>✓ Submitted ${req.docs.type}` : ''}
+              ${when ? `<br><span style="opacity:.7;">Verification date: ${when}</span>` : ''}`;
+          };
+        } else {
+          link.style.display = 'none';
+          details.style.display = 'none';
+        }
+      });
+    }
+
     // save toggle reflects and updates real saved state
     const saveBtn = document.getElementById('saveBtn');
     function paintSaveBtn(saved){
@@ -404,6 +511,17 @@
     }
     chatSendBtn.disabled = false;
     chatInput.focus();
+  });
+
+  /* ===== SAFETY NOTICE MODAL ===== */
+  const safetyOverlay = document.getElementById('safetyOverlay');
+  document.getElementById('safetyBtn').addEventListener('click', () => safetyOverlay.classList.add('open'));
+  document.getElementById('safetyClose').addEventListener('click', () => safetyOverlay.classList.remove('open'));
+  safetyOverlay.addEventListener('click', (e) => {
+    if (e.target === safetyOverlay) safetyOverlay.classList.remove('open');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') safetyOverlay.classList.remove('open');
   });
 
   /* ===== REPORT MODAL ===== */

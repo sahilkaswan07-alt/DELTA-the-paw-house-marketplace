@@ -204,6 +204,61 @@ html, body {
 }
 .pet-location { font-size: .85rem; color: var(--muted); margin-bottom: 1.4rem; }
 
+.price-row { display: flex; align-items: center; gap: .6rem; margin-bottom: .2rem; }
+.price-row .pet-price { margin-bottom: 0; }
+
+.safety-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(224,123,123,0.45);
+  background: rgba(224,123,123,0.1);
+  color: var(--accent2);
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+  flex-shrink: 0;
+}
+.safety-btn svg { width: 15px; height: 15px; }
+.safety-btn:hover { background: rgba(224,123,123,0.2); transform: translateY(-1px); }
+
+.safety-modal { max-width: 460px; max-height: 82vh; overflow-y: auto; text-align: left; }
+.safety-modal h3 { text-align: left; color: var(--accent2); font-size: 1.1rem; margin-bottom: .8rem; }
+.safety-modal p { font-size: .84rem; line-height: 1.6; color: var(--text); margin-bottom: .7rem; }
+
+.safety-alert {
+  background: rgba(224,123,123,0.08);
+  border: 1px solid rgba(224,123,123,0.3);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin: .3rem 0 1rem;
+}
+.safety-alert p { font-size: .82rem; margin-bottom: .6rem; }
+.safety-alert p:last-child { margin-bottom: 0; }
+.safety-alert-title { font-weight: 800; color: var(--accent2); font-size: .85rem; }
+
+.safety-tagline {
+  text-align: center;
+  font-weight: 700;
+  font-size: .82rem;
+  color: var(--accent);
+  margin-bottom: 1rem !important;
+}
+
+.safety-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding-top: .9rem;
+  border-top: 1px solid rgba(244,162,77,0.15);
+  font-size: .72rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .spec-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -420,6 +475,11 @@ html, body {
 
   .pbm { padding: 1.6rem; border-radius: 20px; }
   .pbm h3 { font-size: 1.1rem; }
+
+  .safety-btn { width: 26px; height: 26px; }
+  .safety-btn svg { width: 13px; height: 13px; }
+  .safety-modal h3 { font-size: 1rem; }
+  .safety-modal p, .safety-alert p { font-size: .8rem; }
 }
 
 /* ---- Very small phones (≤380px) ---- */

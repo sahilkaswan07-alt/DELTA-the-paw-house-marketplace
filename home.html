@@ -7,6 +7,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="home.css">
+<style>
+  /* Added for pet verification status badges — kept inline so it
+     doesn't require editing home.css. Move into home.css anytime. */
+  .verify-legend{
+    display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:center;
+    margin-top:14px; font-size:.78rem; color:var(--muted,#7a7a8c);
+  }
+  .verify-legend span{ white-space:nowrap; }
+  .verify-badge{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 10px; border-radius:20px; font-size:.72rem; font-weight:600;
+    margin-top:6px;
+  }
+</style>
 </head>
 <body>
 
@@ -15,7 +29,13 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <a href="home.html" class="nav-logo">Δ Delta</a>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="navbar-right">
+      <button class="bell-btn" id="bellBtn" aria-label="Verification notice" title="Verification notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span class="bell-dot"></span>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </div>
     <ul class="nav-links" id="navLinks">
       <li><a href="home.html"><span class="nav-text">Home</span></a></li>
       <li><a href="home.html"><span class="nav-text">Marketplace</span></a></li>
@@ -52,6 +72,7 @@
     <div class="sec-head">
       <h2>Latest Listings 🐾</h2>
       <p>Fresh pets looking for their forever home.</p>
+      <div class="verify-legend" id="verifyLegend"></div>
     </div>
 
     <div class="pets-grid" id="listingGrid">
@@ -72,12 +93,47 @@
       </a>
   </footer>
 
+  <!-- VERIFICATION NOTICE MODAL -->
+  <div class="verify-modal-overlay" id="verifyModalOverlay">
+    <div class="verify-modal" role="dialog" aria-modal="true" aria-labelledby="verifyModalTitle">
+      <button class="verify-modal-close" id="verifyModalClose" aria-label="Close">✕</button>
+      <h3 id="verifyModalTitle">ध्यान रखें 🛡️🐾</h3>
+      <p class="vm-lead">Listing Live होना और Verified होना अलग-अलग चीजें हैं।</p>
+      <p>अब Delta Paw House पर आपके pet की safety और trust के लिए एक नया Verification System है।</p>
+
+      <ul class="vm-status-list">
+        <li><span class="vm-dot" style="background:#eab308;"></span> Yellow = Verification Pending</li>
+        <li><span class="vm-dot" style="background:#3b82f6;"></span> Blue = Under Review</li>
+        <li><span class="vm-dot" style="background:#f97316;"></span> Orange = More Info Needed</li>
+        <li><span class="vm-dot" style="background:#22c55e;"></span> Green = Delta Paw House Verified</li>
+        <li><span class="vm-dot" style="background:#ef4444;"></span> Red = Verification Unsuccessful</li>
+      </ul>
+
+      <p>Verified Badge का मतलब है कि submitted information को Delta Paw House ने review किया है।</p>
+
+      <div class="vm-warning">
+        <p class="vm-warning-title">⚠️ IMPORTANT MESSAGE</p>
+        <p>Delta Paw House Verification का मतलब यह नहीं है कि हम pet की health, breed, ownership या transaction की 100% guarantee दे रहे हैं।</p>
+        <p>Verification का उद्देश्य है: Fake listings और misleading information के risk को कम करना और buyers &amp; sellers के बीच trust बढ़ाना।</p>
+        <p>इसलिए कोई भी pet खरीदने या adopt करने से पहले: Seller से बात करें, pet को personally देखें और documents/details खुद verify करें।</p>
+        <p><strong>Never send money blindly.</strong> बिना proper verification के कोई payment न करें।</p>
+        <p>Seller को personally verify किए बिना, केवल online information के आधार पर payment करना buyer की अपनी responsibility है। Delta Paw House किसी buyer द्वारा seller को voluntarily किए गए payment, advance payment, या transaction से होने वाले financial loss की responsibility नहीं लेता।</p>
+      </div>
+
+      <div class="vm-footer">
+        <span>Founder: Dr. Sahil Choudhary</span>
+        <span>CEO: Anil Choudhary</span>
+      </div>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
   <script src="firebaseconfig.js"></script>
   <script src="cloudinaryconfig.js"></script>
+  <script src="verification.js"></script>
   <script src="data.js"></script>
 <script>
   /* ===== BACKGROUND CANVAS (unchanged) ===== */
@@ -119,6 +175,28 @@
     });
   });
 
+  /* ===== VERIFICATION NOTICE MODAL (bell icon) ===== */
+  const bellBtn = document.getElementById('bellBtn');
+  const verifyModalOverlay = document.getElementById('verifyModalOverlay');
+  const verifyModalClose = document.getElementById('verifyModalClose');
+
+  function openVerifyModal(){
+    verifyModalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeVerifyModal(){
+    verifyModalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  bellBtn.addEventListener('click', openVerifyModal);
+  verifyModalClose.addEventListener('click', closeVerifyModal);
+  verifyModalOverlay.addEventListener('click', (e) => {
+    if (e.target === verifyModalOverlay) closeVerifyModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeVerifyModal();
+  });
+
   /* ===== RENDER LISTINGS FROM DeltaStore (Firestore, real-time) ===== */
   const grid = document.getElementById('listingGrid');
   const emptyState = document.getElementById('emptyState');
@@ -131,6 +209,20 @@
     return `<div class="pet-photo emoji-photo">${pet.photo}</div>`;
   }
 
+  // All statuses once a seller has started verification get a badge on
+  // the home page — only a pet with no verification request at all
+  // ('none'/undefined) gets no badge.
+  const HOME_VISIBLE_STATUSES = ['pending', 'review', 'moreinfo', 'approved', 'rejected'];
+  let verifyStatusMap = {};
+
+  function verifyBadgeHTML(petId){
+    if (typeof DeltaVerify === 'undefined') return '';
+    const status = verifyStatusMap[petId];
+    if (!status || !HOME_VISIBLE_STATUSES.includes(status)) return '';
+    const meta = DeltaVerify.STATUS_META[status];
+    return `<span class="verify-badge" style="background:${meta.color}22;color:${meta.color};border:1px solid ${meta.color}66;">${meta.dot} ${status === 'approved' ? 'Delta Paw House Verified' : meta.label}</span>`;
+  }
+
   function cardHTML(pet, saved){
     return `
       <div class="pet-box" data-id="${pet.id}" data-type="${pet.category}" data-name="${(pet.name||'').toLowerCase()} ${(pet.breed||'').toLowerCase()}">
@@ -141,12 +233,33 @@
           <div class="pet-meta">
             <span class="pet-chip price">₹${Number(pet.price).toLocaleString('en-IN')}</span>
           </div>
+          <div>${verifyBadgeHTML(pet.id)}</div>
           <div class="listing-actions">
             <button class="lock-btn view-btn" data-id="${pet.id}">View ${pet.name}</button>
             <button class="save-toggle${saved ? ' saved' : ''}" data-id="${pet.id}">${saved ? '❤️ Saved' : '❤️ Save'}</button>
           </div>
         </div>
       </div>`;
+  }
+
+  function renderLegend(){
+    if (typeof DeltaVerify === 'undefined') return; // badge module not loaded — skip legend, don't break the page
+    const order = ['pending', 'review', 'moreinfo', 'approved', 'rejected'];
+    document.getElementById('verifyLegend').innerHTML = order.map(s => {
+      const m = DeltaVerify.STATUS_META[s];
+      return `<span>${m.dot} ${m.color === DeltaVerify.STATUS_META.approved.color ? 'Green' : ''}${s === 'pending' ? 'Yellow' : ''}${s === 'review' ? 'Blue' : ''}${s === 'moreinfo' ? 'Orange' : ''}${s === 'rejected' ? 'Red' : ''} = ${m.label}</span>`;
+    }).join('');
+  }
+  renderLegend();
+
+  // Live-subscribe to verification statuses so badges update the
+  // instant an admin approves/rejects — no page reload needed.
+  // Guarded: if verification.js isn't on this page, pets still render normally, just without badges.
+  if (typeof DeltaVerify !== 'undefined') {
+    DeltaVerify.onAllStatuses(map => {
+      verifyStatusMap = map;
+      renderGrid();
+    });
   }
 
   async function renderGrid(){

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Your Pet — Δ Delta Paw House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0f14; --card:#13151c; --text:#e8e2d5; --muted:#7a7a8c;
+    --accent:#f4a24d; --accent2:#e07b7b;
+    --pending:#e0b64d; --review:#4da6e0; --moreinfo:#e0823d; --approved:#3dbd6d; --rejected:#e05656;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px;}
+  .wrap{max-width:640px;margin:0 auto;padding:32px 18px;}
+  h1{font-family:'Playfair Display',serif;font-size:1.7rem;margin:0 0 4px;}
+  .sub{color:var(--muted);font-size:.92rem;margin:0 0 24px;}
+  .steps{display:flex;gap:8px;margin-bottom:24px;}
+  .step-dot{flex:1;height:5px;border-radius:4px;background:rgba(255,255,255,.08);}
+  .step-dot.active{background:var(--accent);}
+  .step-dot.done{background:var(--approved);}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:22px 20px;margin-bottom:16px;}
+  .card h2{font-size:1.1rem;margin:0 0 4px;}
+  .card .hint{color:var(--muted);font-size:.85rem;margin:0 0 16px;}
+  label{display:block;font-size:.85rem;color:var(--muted);margin:14px 0 6px;}
+  input[type=text],input[type=tel],input[type=email]{
+    width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.12);
+    background:#0d0f14;color:var(--text);font-size:.95rem;outline:none;
+  }
+  input:focus{border-color:var(--accent);}
+  .btn{border:none;border-radius:30px;padding:12px 22px;font-weight:600;font-size:.9rem;cursor:pointer;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0d0f14;}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--text);}
+  .row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600;}
+  .otp-box{background:rgba(244,162,77,.1);border:1px dashed var(--accent);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:.85rem;}
+  .otp-code{font-size:1.4rem;letter-spacing:4px;font-weight:700;color:var(--accent);}
+  .upload-slot{border:1px dashed rgba(255,255,255,.18);border-radius:12px;padding:14px;margin-top:10px;}
+  .upload-slot.done{border-color:var(--approved);}
+  .upload-slot .u-title{font-size:.88rem;font-weight:600;margin-bottom:6px;}
+  .upload-slot .u-status{font-size:.78rem;color:var(--muted);}
+  .doc-check{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.9rem;}
+  .foot-nav{display:flex;justify-content:space-between;margin-top:18px;}
+  .status-view{text-align:center;padding:30px 10px;}
+  .status-view .dot-big{font-size:2.6rem;}
+  .status-view h2{font-family:'Playfair Display',serif;margin:8px 0 6px;}
+  .status-view p{color:var(--muted);font-size:.92rem;}
+  .checklist{text-align:left;max-width:320px;margin:16px auto 0;font-size:.88rem;}
+  .checklist div{padding:4px 0;}
+  .err{color:var(--rejected);font-size:.82rem;margin-top:6px;}
+  a.back{color:var(--muted);text-decoration:none;font-size:.85rem;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="home.html">← Back to Marketplace</a>
+  <h1 id="petHeader">Verify Your Pet</h1>
+  <p class="sub" id="petSub">Loading listing…</p>
+
+  <div class="steps">
+    <div class="step-dot" data-s="1"></div>
+    <div class="step-dot" data-s="2"></div>
+    <div class="step-dot" data-s="3"></div>
+  </div>
+
+  <!-- STEP 1: SELLER -->
+  <div class="card" id="step1">
+    <h2>👤 Verify Seller</h2>
+    <p class="hint">Just the basics first.</p>
+
+    <label>Mobile number</label>
+    <div class="row">
+      <input type="tel" id="mobileInput" placeholder="+91 XXXXX XXXXX" style="flex:1;">
+      <button class="btn btn-ghost" id="sendOtpBtn">Send OTP</button>
+    </div>
+    <div class="otp-box hidden" id="otpBox">
+      This project runs on Firebase's free plan, which doesn't include real SMS —
+      so here's your demo code instead of a text message:
+      <div class="otp-code" id="otpDisplay">------</div>
+    </div>
+    <div class="row hidden" id="otpConfirmRow">
+      <input type="text" id="otpInput" placeholder="Enter 6-digit code" style="flex:1;" maxlength="6">
+      <button class="btn btn-ghost" id="confirmOtpBtn">Confirm</button>
+    </div>
+    <div id="mobileErr" class="err"></div>
+    <div class="row hidden" id="mobileVerifiedRow">
+      <span class="badge" style="background:rgba(61,189,109,.15);color:var(--approved);">✅ Mobile number verified</span>
+    </div>
+
+    <label>Full name</label>
+    <input type="text" id="sellerNameInput" placeholder="Your full name">
+
+    <label>Aadhaar number</label>
+    <input type="text" id="aadhaarInput" placeholder="XXXX XXXX XXXX" inputmode="numeric" maxlength="14">
+    <div id="aadhaarErr" class="err"></div>
+    <p class="hint" style="margin:6px 0 0;">
+      For identity verification only — we store just the last 4 digits, never the full number.
+    </p>
+
+    <label>Email (optional)</label>
+    <input type="email" id="sellerEmailInput" placeholder="you@example.com">
+
+    <div class="foot-nav">
+      <span></span>
+      <button class="btn btn-primary" id="toStep2" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: PET -->
+  <div class="card hidden" id="step2">
+    <h2>🐕 Verify the Pet</h2>
+    <p class="hint">Only things that are easy to grab on a phone.</p>
+
+    <div class="upload-slot" data-slot="face">
+      <div class="u-title">Photo 1 — Face</div>
+      <input type="file" accept="image/*" data-photo="face">
+      <div class="u-status">Not uploaded</div>
+    </div>
+    <div class="upload-slot" data-slot="body">
+      <div class="u-title">Photo 2 — Full body</div>
+      <input type="file" accept="image/*" data-photo="body">
+      <div class="u-status">Not uploaded</div>
+    </div>
+    <div class="upload-slot" data-slot="side">
+      <div class="u-title">Photo 3 — Side / profile</div>
+      <input type="file" accept="image/*" data-photo="side">
+      <div class="u-status">Not uploaded</div>
+    </div>
+    <div class="upload-slot" data-slot="video">
+      <div class="u-title">🎥 Pet verification video (10–15 sec)</div>
+      <p class="hint" style="margin:0 0 8px;">Show the pet's face and full body.</p>
+      <input type="file" accept="video/*" data-video="video">
+      <div class="u-status">Not uploaded</div>
+    </div>
+
+    <div class="foot-nav">
+      <button class="btn btn-ghost" id="backTo1">← Back</button>
+      <button class="btn btn-primary" id="toStep3" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: DOCS -->
+  <div class="card hidden" id="step3">
+    <h2>📄 Optional Supporting Proof</h2>
+    <p class="hint">Does your pet have any of these? Not required.</p>
+
+    <div id="docChecks">
+      <label class="doc-check"><input type="radio" name="doc" value="vaccination"> Vaccination record</label>
+      <label class="doc-check"><input type="radio" name="doc" value="vet"> Veterinary record</label>
+      <label class="doc-check"><input type="radio" name="doc" value="microchip"> Microchip</label>
+      <label class="doc-check"><input type="radio" name="doc" value="pedigree"> Registration / pedigree certificate</label>
+      <label class="doc-check"><input type="radio" name="doc" value="purchase"> Purchase / adoption document</label>
+      <label class="doc-check"><input type="radio" name="doc" value="other"> Other supporting document</label>
+      <label class="doc-check"><input type="radio" name="doc" value="none" checked> None</label>
+    </div>
+    <div class="upload-slot hidden" id="docUploadSlot">
+      <div class="u-title">Upload document</div>
+      <input type="file" accept="image/*,.pdf" id="docFileInput">
+      <div class="u-status" id="docFileStatus">Not uploaded</div>
+    </div>
+
+    <div class="foot-nav">
+      <button class="btn btn-ghost" id="backTo2">← Back</button>
+      <button class="btn btn-primary" id="submitBtn">Submit for Review</button>
+    </div>
+  </div>
+
+  <!-- STATUS VIEW (after submit, or on revisit) -->
+  <div class="card hidden" id="statusCard">
+    <div class="status-view">
+      <div class="dot-big" id="statusDot">🟡</div>
+      <h2 id="statusTitle">Verification Pending</h2>
+      <p id="statusDesc">—</p>
+      <div class="checklist hidden" id="checklist"></div>
+      <div id="moreInfoBox" class="hidden" style="margin-top:14px;">
+        <p style="color:var(--moreinfo);font-size:.9rem;" id="adminNoteText"></p>
+        <button class="btn btn-primary" id="resubmitBtn">Submit Again</button>
+      </div>
+      <div id="rejectedBox" class="hidden" style="margin-top:14px;">
+        <button class="btn btn-ghost" id="rejectResubmitBtn">Submit Additional Information</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<script src="firebaseconfig.js"></script>
+<script src="cloudinaryconfig.js"></script>
+<script src="verification.js"></script>
+<script src="data.js"></script>
+<script>
+(async () => {
+  // Fail LOUDLY instead of hanging on "Loading listing…" forever —
+  // this is what was silently breaking the page before.
+  if (typeof DeltaVerify === 'undefined') {
+    document.getElementById('petSub').innerHTML =
+      '⚠️ verification.js failed to load on this page. Check that verification.js ' +
+      'is uploaded to the same folder as verify.html on your server, and that the ' +
+      '&lt;script src="verification.js"&gt; tag above data.js is present.';
+    document.getElementById('petSub').style.color = '#e05656';
+    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+    return;
+  }
+  if (typeof DeltaStore === 'undefined') {
+    document.getElementById('petSub').innerHTML =
+      '⚠️ data.js failed to load on this page. Check that data.js is uploaded ' +
+      'to the same folder as verify.html on your server.';
+    document.getElementById('petSub').style.color = '#e05656';
+    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+    return;
+  }
+
+  const params = new URLSearchParams(location.search);
+  const petId = params.get('id');
+  if (!petId) {
+    document.getElementById('petSub').textContent = 'No pet selected — go back to My Listings and click "Verify Pet".';
+    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+    return;
+  }
+
+  try {
+    await DeltaVerify.ensureUid();
+  } catch (e) {
+    document.getElementById('petSub').innerHTML = '⚠️ Could not connect to Firebase: ' + (e.message || e);
+    document.getElementById('petSub').style.color = '#e05656';
+    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+    return;
+  }
+
+  let pet = null;
+  try { pet = await DeltaStore.getById(petId); } catch (e) { /* data.js may not exist yet — fine, we can still verify */ }
+  document.getElementById('petHeader').textContent = pet ? `Verify ${pet.name}` : 'Verify Your Pet';
+  document.getElementById('petSub').textContent = pet ? `${pet.breed || ''} · ${pet.city || ''}` : `Listing #${petId}`;
+
+  let req;
+  try {
+    req = await DeltaVerify.getRequest(petId);
+    if (!req) {
+      await DeltaVerify.startVerification(petId, pet ? pet.name : petId);
+      req = await DeltaVerify.getRequest(petId);
+    }
+  } catch (e) {
+    document.getElementById('petSub').innerHTML = '⚠️ Could not reach the verifications collection in Firestore: ' + (e.message || e) +
+      '<br>Check Firestore is set up and its rules allow reads/writes (test mode is fine for now).';
+    document.getElementById('petSub').style.color = '#e05656';
+    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+    return;
+  }
+
+  const stepDots = document.querySelectorAll('.step-dot');
+  function showStep(n){
+    ['step1','step2','step3','statusCard'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    if (n <= 3) {
+      document.getElementById('step'+n).classList.remove('hidden');
+      stepDots.forEach((d,i) => d.classList.toggle('active', i === n-1));
+    } else {
+      document.getElementById('statusCard').classList.remove('hidden');
+    }
+  }
+
+  // If already submitted / decided, jump straight to the live status view.
+  let aadhaarAlreadyVerified = false;
+  if (req.status && req.status !== DeltaVerify.STATUS.PENDING) {
+    document.querySelector('.steps').classList.add('hidden');
+    showStep(99);
+  } else {
+    showStep(1);
+    // restore anything already filled in
+    if (req.seller) {
+      document.getElementById('mobileInput').value = req.seller.mobile || '';
+      document.getElementById('sellerNameInput').value = req.seller.name || '';
+      document.getElementById('sellerEmailInput').value = req.seller.email || '';
+      if (req.seller.aadhaarVerified && req.seller.aadhaarLast4) {
+        aadhaarAlreadyVerified = true;
+        document.getElementById('aadhaarInput').placeholder = `Already verified (ending ${req.seller.aadhaarLast4})`;
+      }
+      if (req.seller.mobileVerified) {
+        document.getElementById('mobileVerifiedRow').classList.remove('hidden');
+        checkStep1Ready();
+      }
+    }
+  }
+
+  /* ---------- STEP 1: mobile OTP + name ---------- */
+  document.getElementById('sendOtpBtn').addEventListener('click', async () => {
+    const mobile = document.getElementById('mobileInput').value.trim();
+    if (!mobile) { document.getElementById('mobileErr').textContent = 'Enter a mobile number first.'; return; }
+    document.getElementById('mobileErr').textContent = '';
+    const otp = await DeltaVerify.sendMobileOTP(petId, mobile);
+    document.getElementById('otpBox').classList.remove('hidden');
+    document.getElementById('otpDisplay').textContent = otp;
+    document.getElementById('otpConfirmRow').classList.remove('hidden');
+  });
+
+  document.getElementById('confirmOtpBtn').addEventListener('click', async () => {
+    const code = document.getElementById('otpInput').value;
+    const ok = await DeltaVerify.confirmMobileOTP(petId, code);
+    if (ok) {
+      document.getElementById('mobileErr').textContent = '';
+      document.getElementById('mobileVerifiedRow').classList.remove('hidden');
+      document.getElementById('otpConfirmRow').classList.add('hidden');
+      document.getElementById('otpBox').classList.add('hidden');
+      checkStep1Ready();
+    } else {
+      document.getElementById('mobileErr').textContent = 'That code doesn\'t match — try again.';
+    }
+  });
+
+  function checkStep1Ready(){
+    const nameOk = document.getElementById('sellerNameInput').value.trim().length > 1;
+    const verified = !document.getElementById('mobileVerifiedRow').classList.contains('hidden');
+    const aadhaarVal = document.getElementById('aadhaarInput').value;
+    const aadhaarOk = isValidAadhaar(aadhaarVal) || (aadhaarAlreadyVerified && aadhaarVal.trim() === '');
+    document.getElementById('toStep2').disabled = !(nameOk && verified && aadhaarOk);
+  }
+  document.getElementById('sellerNameInput').addEventListener('input', checkStep1Ready);
+
+  /* ---------- Aadhaar: format as you type, validate, mask before storing ---------- */
+  function isValidAadhaar(raw){
+    const digits = raw.replace(/\D/g, '');
+    return digits.length === 12;
+  }
+
+  const aadhaarInput = document.getElementById('aadhaarInput');
+  aadhaarInput.addEventListener('input', (e) => {
+    let digits = e.target.value.replace(/\D/g, '').slice(0, 12);
+    e.target.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+    const err = document.getElementById('aadhaarErr');
+    if (digits.length > 0 && digits.length < 12) {
+      err.textContent = 'Aadhaar number must be 12 digits.';
+    } else {
+      err.textContent = '';
+    }
+    checkStep1Ready();
+  });
+
+  document.getElementById('toStep2').addEventListener('click', async () => {
+    const aadhaarDigits = document.getElementById('aadhaarInput').value.replace(/\D/g, '');
+    const aadhaarLast4 = aadhaarDigits.length === 12
+      ? aadhaarDigits.slice(-4)
+      : (req.seller && req.seller.aadhaarLast4) || '';
+    await DeltaVerify.patch(petId, {
+      seller: {
+        mobile: document.getElementById('mobileInput').value.trim(),
+        mobileVerified: true,
+        name: document.getElementById('sellerNameInput').value.trim(),
+        email: document.getElementById('sellerEmailInput').value.trim(),
+        aadhaarVerified: true,
+        aadhaarLast4: aadhaarLast4
+      }
+    });
+    showStep(2);
+  });
+
+  /* ---------- STEP 2: pet photos + video ---------- */
+  const photoUrls = { face: '', body: '', side: '' };
+  let videoUrl = '';
+
+  function checkStep2Ready(){
+    const allPhotos = Object.values(photoUrls).every(u => !!u);
+    document.getElementById('toStep3').disabled = !(allPhotos && videoUrl);
+  }
+
+  document.querySelectorAll('input[data-photo]').forEach(input => {
+    input.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const slot = e.target.closest('.upload-slot');
+      slot.querySelector('.u-status').textContent = 'Uploading…';
+      try {
+        const url = await DeltaVerify.uploadToCloudinary(file, 'image');
+        photoUrls[e.target.dataset.photo] = url;
+        slot.classList.add('done');
+        slot.querySelector('.u-status').textContent = 'Uploaded ✓';
+        checkStep2Ready();
+      } catch (err) {
+        slot.querySelector('.u-status').textContent = 'Upload failed — try again.';
+      }
+    });
+  });
+
+  document.querySelector('input[data-video]').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const slot = e.target.closest('.upload-slot');
+    slot.querySelector('.u-status').textContent = 'Uploading…';
+    try {
+      const url = await DeltaVerify.uploadToCloudinary(file, 'video');
+      videoUrl = url;
+      slot.classList.add('done');
+      slot.querySelector('.u-status').textContent = 'Uploaded ✓';
+      checkStep2Ready();
+    } catch (err) {
+      slot.querySelector('.u-status').textContent = 'Upload failed — try again.';
+    }
+  });
+
+  document.getElementById('backTo1').addEventListener('click', () => showStep(1));
+  document.getElementById('toStep3').addEventListener('click', async () => {
+    await DeltaVerify.patch(petId, { pet: { photos: [photoUrls.face, photoUrls.body, photoUrls.side], video: videoUrl } });
+    showStep(3);
+  });
+
+  /* ---------- STEP 3: optional docs ---------- */
+  let docUrl = '';
+  document.getElementById('docChecks').addEventListener('change', (e) => {
+    const val = e.target.value;
+    document.getElementById('docUploadSlot').classList.toggle('hidden', val === 'none');
+  });
+  document.getElementById('docFileInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('docFileStatus').textContent = 'Uploading…';
+    try {
+      docUrl = await DeltaVerify.uploadToCloudinary(file, 'auto');
+      document.getElementById('docFileStatus').textContent = 'Uploaded ✓';
+    } catch (err) {
+      document.getElementById('docFileStatus').textContent = 'Upload failed — try again.';
+    }
+  });
+
+  document.getElementById('backTo2').addEventListener('click', () => showStep(2));
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const docType = document.querySelector('input[name="doc"]:checked').value;
+    await DeltaVerify.patch(petId, { docs: { type: docType, files: docUrl ? [docUrl] : [] } });
+    await DeltaVerify.submitForReview(petId);
+    document.querySelector('.steps').classList.add('hidden');
+    showStep(99);
+  });
+
+  /* ---------- LIVE STATUS VIEW ---------- */
+  DeltaVerify.onRequest(petId, (r) => {
+    if (!r || !r.status) return;
+    const meta = DeltaVerify.STATUS_META[r.status] || DeltaVerify.STATUS_META.none;
+    document.getElementById('statusDot').textContent = meta.dot;
+    document.getElementById('statusTitle').textContent =
+      r.status === 'pending' ? 'Verification Pending' :
+      r.status === 'review' ? 'Under Review' :
+      r.status === 'approved' ? '🟢 Delta Paw House Verified' :
+      r.status === 'moreinfo' ? 'Additional Information Needed' :
+      r.status === 'rejected' ? 'Verification Unsuccessful' : meta.label;
+    document.getElementById('statusDesc').textContent = meta.meaning;
+
+    document.getElementById('checklist').classList.toggle('hidden', r.status !== 'approved');
+    if (r.status === 'approved') {
+      const when = r.reviewedAt && r.reviewedAt.toDate ? r.reviewedAt.toDate().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '';
+      document.getElementById('checklist').innerHTML = `
+        <div>✓ Seller mobile</div><div>✓ Seller identity</div>
+        <div>✓ Aadhaar verified${r.seller && r.seller.aadhaarLast4 ? ' (ending ' + r.seller.aadhaarLast4 + ')' : ''}</div>
+        <div>✓ Pet photos/video</div>
+        ${r.docs && r.docs.type !== 'none' ? '<div>✓ Submitted supporting document</div>' : ''}
+        ${when ? `<div style="color:var(--muted);margin-top:6px;">Verified on ${when}</div>` : ''}`;
+    }
+
+    document.getElementById('moreInfoBox').classList.toggle('hidden', r.status !== 'moreinfo');
+    if (r.status === 'moreinfo') {
+      document.getElementById('adminNoteText').textContent = r.adminNote || 'Please review and resubmit your details.';
+    }
+
+    document.getElementById('rejectedBox').classList.toggle('hidden', r.status !== 'rejected');
+  });
+
+  document.getElementById('resubmitBtn').addEventListener('click', async () => {
+    await DeltaVerify.patch(petId, { status: DeltaVerify.STATUS.PENDING });
+    document.querySelector('.steps').classList.remove('hidden');
+    showStep(1);
+  });
+  document.getElementById('rejectResubmitBtn').addEventListener('click', async () => {
+    await DeltaVerify.patch(petId, { status: DeltaVerify.STATUS.PENDING });
+    document.querySelector('.steps').classList.remove('hidden');
+    showStep(1);
+  });
+})();
+</script>
+</body>
+</html>
