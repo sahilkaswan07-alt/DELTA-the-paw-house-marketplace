@@ -62,11 +62,53 @@ html, body {
   padding: .45rem 1.1rem;
   border-radius: 40px;
 }
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: .3rem .4rem;
+  z-index: 60;
+}
+
 @media(max-width: 700px){
-  .nav-links .nav-hide-mobile{ display:none; }
-  .nav-links{ gap: 1rem; }
-  .nav-messages .nav-text{ display:none; }
-  .nav-messages .nav-icon{ display:inline; }
+  .nav-toggle { display: block; }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: rgba(13,15,20,0.97);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(244,162,77,0.12);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease;
+  }
+  .nav-links.open { max-height: 360px; }
+
+  .nav-links li { width: 100%; }
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: .9rem;
+    border-bottom: 1px solid rgba(244,162,77,0.08);
+  }
+  .nav-links .nav-cta {
+    border-radius: 0;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid rgba(244,162,77,0.08);
+  }
 }
 
 /* ===== LAYOUT ===== */

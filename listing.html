@@ -19,11 +19,12 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <a href="home.html" class="nav-logo">Δ Delta</a>
-    <ul class="nav-links">
-      <li><a href="home.html"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a></li>
-      <li><a href="delta.html"><span class="nav-icon">🛍️</span><span class="nav-text">Marketplace</span></a></li>
-      <li><a href="saved.html"><span class="nav-icon">❤️</span><span class="nav-text">Saved</span></a></li>
-      <li><a href="inbox.html"><span class="nav-icon">💬</span><span class="nav-text">Messages</span></a></li>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="home.html"><span class="nav-text">Home</span></a></li>
+      <li><a href="delta.html"><span class="nav-text">Marketplace</span></a></li>
+      <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="inbox.html"><span class="nav-text">Messages</span></a></li>
       <li><a href="home.html" class="nav-cta">← Back</a></li>
     </ul>
   </nav>
@@ -211,6 +212,22 @@
   window.addEventListener('resize',()=>{ resize(); init(); });
 
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ===== MOBILE NAV TOGGLE ===== */
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    navToggle.textContent = isOpen ? '✕' : '☰';
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.textContent = '☰';
+    });
+  });
 
   /* ===== LOAD LISTING FROM DeltaStore BY ?id= ===== */
   const params = new URLSearchParams(window.location.search);
