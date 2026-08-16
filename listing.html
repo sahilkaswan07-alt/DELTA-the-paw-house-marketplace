@@ -379,10 +379,8 @@
           }
         }
 
-        const visible = ['pending', 'review', 'moreinfo', 'approved', 'rejected'];
-        if (!status || !visible.includes(status)) { wrap.style.display = 'none'; return; }
-
-        const meta = DeltaVerify.STATUS_META[status];
+        const effectiveStatus = status || DeltaVerify.STATUS.PENDING;
+        const meta = DeltaVerify.STATUS_META[effectiveStatus];
         wrap.style.display = 'block';
         badgeEl.style.background = meta.color + '22';
         badgeEl.style.color = meta.color;
