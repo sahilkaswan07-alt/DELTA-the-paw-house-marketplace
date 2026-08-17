@@ -1,14 +1,16 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DELTA — Paw House Marketplace</title>
     <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital@0;1&family=Inter:wght@400;500;600;700&family=Spectral+SC:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
   <canvas id="bg-canvas"></canvas>
- 
+
 <div id="welcome-stage">
   <div id="gates">
     <div class="gate left">
@@ -26,7 +28,7 @@
       <div class="gate-rings" id="ringsRight"></div>
     </div>
   </div>
- 
+
   <div id="title-wrap">
     <div class="premium-badge">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
@@ -34,13 +36,115 @@
     </div>
     <div class="paw-icon">🛍️</div>
     <h1 class="brand">Welcome To Delta House</h1>
-    <p class="tagline">Δ The Paw House Marketplace</p>   
+    <p class="tagline">Δ The Paw House Marketplace</p>
     <button onclick="window.location.href='home.html'" id="enter-btn">Enter DELTA →</button>
   </div>
- 
+
   <div class="tap-hint" id="tapHint">Tap to open the gates</div>
 </div>
- 
+
+<!-- ================= BREEDER OFFER POPUP ================= -->
+<div id="breederOverlay" class="breeder-overlay">
+  <div class="breeder-modal">
+    <button class="breeder-close" id="breederClose" aria-label="Close">&times;</button>
+
+    <div class="breeder-scale-wrap" id="breederScaleWrap">
+      <div class="breeder-poster" id="breederPoster">
+
+        <div class="bp-orbits">
+          <svg viewBox="0 0 1080 1350" preserveAspectRatio="none">
+            <ellipse cx="540" cy="220" rx="430" ry="230" fill="none" stroke="rgba(200,30,58,0.18)" stroke-width="1"/>
+            <ellipse cx="540" cy="220" rx="330" ry="330" fill="none" stroke="rgba(200,30,58,0.12)" stroke-width="1"/>
+            <ellipse cx="540" cy="220" rx="230" ry="430" fill="none" stroke="rgba(232,98,44,0.10)" stroke-width="1"/>
+            <g class="bp-stars">
+              <circle cx="180" cy="90" r="2.4"/>
+              <circle cx="930" cy="150" r="2"/>
+              <circle cx="760" cy="60" r="1.6"/>
+              <circle cx="120" cy="300" r="1.8"/>
+              <circle cx="960" cy="330" r="2.2"/>
+              <circle cx="540" cy="30" r="1.6"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="bp-content">
+
+          <div class="bp-brandrow">
+            <div class="bp-logo">&Delta; Delta <span>&times; Paw House</span></div>
+            <div class="bp-tag">Breeder Program</div>
+          </div>
+
+          <div class="bp-eyebrow">&#9733; Delta Marketplace — Breeder Rewards</div>
+          <h2 class="bp-h1">Post More.<br>Earn More.</h2>
+          <p class="bp-sub">Our top breeders keep the shelves full — this season, we're paying it forward, one listing at a time.</p>
+
+          <div class="bp-ledger">
+            <div class="bp-rows">
+              <div class="bp-row">
+                <div class="bp-paw bp-base">1</div><div class="bp-paw bp-base">2</div><div class="bp-paw bp-base">3</div><div class="bp-paw bp-base">4</div>
+                <div class="bp-paw bp-base">5</div><div class="bp-paw bp-base">6</div><div class="bp-paw bp-base">7</div><div class="bp-paw bp-base">8</div>
+                <div class="bp-paw bp-base">9</div><div class="bp-paw bp-base">10</div>
+              </div>
+              <div class="bp-row">
+                <div class="bp-paw bp-base">11</div><div class="bp-paw bp-base">12</div><div class="bp-paw bp-base">13</div><div class="bp-paw bp-base">14</div>
+                <div class="bp-paw bp-base">15</div><div class="bp-paw bp-base">16</div><div class="bp-paw bp-base">17</div><div class="bp-paw bp-base">18</div>
+                <div class="bp-paw bp-base">19</div><div class="bp-paw bp-base">20</div>
+              </div>
+              <div class="bp-row">
+                <div class="bp-paw bp-bonus">21</div><div class="bp-paw bp-bonus">22</div><div class="bp-paw bp-bonus">23</div><div class="bp-paw bp-bonus">24</div>
+                <div class="bp-paw bp-bonus">25</div><div class="bp-paw bp-bonus">26</div><div class="bp-paw bp-bonus">27</div><div class="bp-paw bp-bonus">+</div>
+              </div>
+            </div>
+            <div class="bp-threshold">
+              <div class="bp-line"></div>
+              <div class="bp-badge">First 20 posts unlock the offer</div>
+              <div class="bp-line"></div>
+            </div>
+          </div>
+
+          <div class="bp-stamp">
+            <div class="bp-amount">&#8377;<b>7</b></div>
+            <div class="bp-unit">per pet listing, for every post after your 20th</div>
+          </div>
+
+          <div class="bp-rules">
+            <div class="bp-rule">
+              <div class="bp-n">01</div>
+              <p>Post <em>20 or more pet listings</em> on Delta Marketplace to unlock the program.</p>
+            </div>
+            <div class="bp-rule">
+              <div class="bp-n">02</div>
+              <p>From your <em>21st listing onward</em>, every pet post earns you &#8377;7.</p>
+            </div>
+            <div class="bp-rule">
+              <div class="bp-n">03</div>
+              <p>No cap — the more you list, the more you earn. Payouts reflect against your breeder account.</p>
+            </div>
+          </div>
+
+          <div class="bp-deadline">Offer valid through <b>25 August 2026</b></div>
+
+          <div class="bp-contact">
+            <span class="bp-contact-label">DM on Instagram / WhatsApp</span>
+            <div class="bp-contact-people">
+              <span>Dr. Sahil Choudhary — 7300479727</span>
+              <span class="bp-dot">&middot;</span>
+              <span>Anil Choudhary — 7690903858</span>
+            </div>
+          </div>
+
+          <div class="bp-footer">
+            <a class="bp-cta" href="postpet.html">+ Start Posting</a>
+            <div class="bp-foot-note">Delta Marketplace<br><a href="home.html">www.deltapawhouse.in</a></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script>
   // ---- background canvas (matches landing page's orbiting ring field) ----
   const canvas = document.getElementById('bg-canvas');
@@ -48,7 +152,7 @@
   let W, H;
   const FOCAL = 560;
   const COLS = [[62,224,201],[111,131,240],[160,111,224],[77,190,240]];
- 
+
   function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
   function mkRing(i){
     const col = COLS[i % COLS.length];
@@ -150,10 +254,10 @@
     mouse.ty = 0.25 + ((e.clientY/H)-.5)*0.4;
   });
   window.addEventListener('mouseleave', ()=>{ mouse.tx=0; mouse.ty=0.25; });
- 
+
   resize(); init(); animate();
   window.addEventListener('resize', ()=>{ resize(); init(); });
- 
+
   // decorative concentric rings inside each glass gate
   function addGateRings(id){
     const el = document.getElementById(id);
@@ -170,7 +274,7 @@
   }
   addGateRings('ringsLeft');
   addGateRings('ringsRight');
- 
+
   function openGates(){
     if(opened) return;
     opened = true;
@@ -179,17 +283,55 @@
     gates.classList.add('open');
     setTimeout(()=> gates.classList.add('hide'), 2200);
     document.getElementById('title-wrap').classList.add('show');
+    // reveal the breeder offer once the gates have finished opening
+    setTimeout(showBreederPopup, 2600);
   }
   document.getElementById('welcome-stage').addEventListener('click', (e)=>{
     if(e.target.id === 'enter-btn') return;
     openGates();
   });
- 
+
   function goToLanding(){
     document.body.style.transition = 'opacity .6s ease';
     document.body.style.opacity = '0';
     setTimeout(()=>{ window.location.href = 'delta-marketplace.html'; }, 600);
   }
-</script>  
+
+  // ---- breeder offer popup (full poster, scaled to fit) ----
+  const breederOverlay = document.getElementById('breederOverlay');
+  const breederClose = document.getElementById('breederClose');
+  const breederPoster = document.getElementById('breederPoster');
+  const breederScaleWrap = document.getElementById('breederScaleWrap');
+  const POSTER_W = 1080, POSTER_H = 1350;
+
+  function fitBreederPoster(){
+    const availW = Math.min(window.innerWidth * 0.9, 640);
+    const availH = window.innerHeight * 0.88;
+    const scale = Math.min(availW / POSTER_W, availH / POSTER_H, 1);
+    breederPoster.style.transform = `scale(${scale})`;
+    breederScaleWrap.style.width = (POSTER_W * scale) + 'px';
+    breederScaleWrap.style.height = (POSTER_H * scale) + 'px';
+  }
+
+  function showBreederPopup(){
+    fitBreederPoster();
+    breederOverlay.classList.add('show');
+  }
+  function hideBreederPopup(){
+    breederOverlay.classList.remove('show');
+  }
+
+  window.addEventListener('resize', ()=>{
+    if(breederOverlay.classList.contains('show')) fitBreederPoster();
+  });
+
+  breederClose.addEventListener('click', hideBreederPopup);
+  breederOverlay.addEventListener('click', (e)=>{
+    if(e.target === breederOverlay) hideBreederPopup();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape') hideBreederPopup();
+  });
+</script>
 </body>
 </html>
