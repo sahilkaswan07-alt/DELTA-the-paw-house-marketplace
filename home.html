@@ -20,6 +20,20 @@
     padding:3px 10px; border-radius:20px; font-size:.72rem; font-weight:600;
     margin-top:6px;
   }
+
+  /* Sold / Rehomed overlay on card photos — mirrors listing.html exactly */
+  .photo-wrap{ position:relative; }
+  .sold-overlay{
+    position:absolute; inset:0; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(13,15,20,0.6);
+  }
+  .sold-overlay span{
+    display:block; color:#fff; font-weight:800; font-size:1rem;
+    letter-spacing:.04em; text-transform:uppercase; text-align:center;
+    line-height:1.4; border:1.5px solid rgba(255,255,255,0.85);
+    border-radius:40px; padding:.5rem 1.1rem; transform:rotate(-8deg);
+  }
 </style>
 </head>
 <body>
@@ -202,11 +216,25 @@
   const emptyState = document.getElementById('emptyState');
   let allPets = [];
 
+  // A pet counts as sold if ANY of these fields say so — this covers
+  // whichever field name your postpet/admin flow ends up writing to
+  // Firestore. If your data uses a different key, just add it here.
+  function isPetSold(pet){
+    return pet.sold === true ||
+           pet.status === 'sold' ||
+           pet.listingStatus === 'sold' ||
+           pet.availability === 'sold';
+  }
+
   function photoBlockHTML(pet){
-    if (pet.photos && pet.photos.length > 0) {
-      return `<div class="pet-photo" style="background-image:url('${pet.photos[0]}');background-size:cover;background-position:center;"></div>`;
-    }
-    return `<div class="pet-photo emoji-photo">${pet.photo}</div>`;
+    const sold = isPetSold(pet);
+    const inner = (pet.photos && pet.photos.length > 0)
+      ? `<div class="pet-photo" style="background-image:url('${pet.photos[0]}');background-size:cover;background-position:center;"></div>`
+      : `<div class="pet-photo emoji-photo">${pet.photo}</div>`;
+    const overlay = sold
+      ? `<div class="sold-overlay"><span>Sold /<br>Successfully Rehomed</span></div>`
+      : '';
+    return `<div class="photo-wrap">${inner}${overlay}</div>`;
   }
 
   // Every card shows a status badge — a pet with no verification request
@@ -221,8 +249,9 @@
   }
 
   function cardHTML(pet, saved){
+    const sold = isPetSold(pet);
     return `
-      <div class="pet-box" data-id="${pet.id}" data-type="${pet.category}" data-name="${(pet.name||'').toLowerCase()} ${(pet.breed||'').toLowerCase()}">
+      <div class="pet-box${sold ? ' is-sold' : ''}" data-id="${pet.id}" data-type="${pet.category}" data-name="${(pet.name||'').toLowerCase()} ${(pet.breed||'').toLowerCase()}">
         ${photoBlockHTML(pet)}
         <div class="pet-info">
           <div class="pet-name">${pet.name}</div>
@@ -233,7 +262,7 @@
           <div>${verifyBadgeHTML(pet.id)}</div>
           <div class="listing-actions">
             <button class="lock-btn view-btn" data-id="${pet.id}">View ${pet.name}</button>
-            <button class="save-toggle${saved ? ' saved' : ''}" data-id="${pet.id}">${saved ? '❤️ Saved' : '❤️ Save'}</button>
+            <button class="save-toggle${saved ? ' saved' : ''}" data-id="${pet.id}"${sold ? ' disabled' : ''}>${saved ? '❤️ Saved' : '❤️ Save'}</button>
           </div>
         </div>
       </div>`;
@@ -263,7 +292,9 @@
   async function renderGrid(){
     const savedIds = await DeltaStore.getSaved();
     grid.querySelectorAll('.pet-box').forEach(el => el.remove());
-    grid.insertAdjacentHTML('afterbegin', allPets.map(p => cardHTML(p, savedIds.includes(p.id))).join(''));
+    // Sold pets sink to the bottom so active listings stay front and center.
+    const sortedPets = [...allPets].sort((a, b) => (isPetSold(a) ? 1 : 0) - (isPetSold(b) ? 1 : 0));
+    grid.insertAdjacentHTML('afterbegin', sortedPets.map(p => cardHTML(p, savedIds.includes(p.id))).join(''));
 
     grid.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', () => {

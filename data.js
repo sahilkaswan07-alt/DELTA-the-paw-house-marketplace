@@ -269,6 +269,22 @@ const DeltaStore = (() => {
     return Object.assign({ id }, newListing);
   }
 
+  // Marks a listing as sold — only the listing's own seller can do this.
+  // Re-checks ownership against the doc itself (not just the client's
+  // in-memory `pet` object) so a stale page or tampered call can't mark
+  // someone else's listing sold.
+  async function markAsSold(id) {
+    await ready;
+    if (!id) throw new Error('Missing listing id.');
+    const ref = db.collection(LISTINGS).doc(id);
+    const snap = await ref.get();
+    if (!snap.exists) throw new Error('Listing not found.');
+    if (snap.data().sellerId !== uid) {
+      throw new Error('You can only mark your own listings as sold.');
+    }
+    await ref.update({ sold: true, soldAt: Date.now() });
+  }
+
   /* ---------------- CHAT ----------------
      One chat doc per (listing, buyer) pair — id: "<listingId>__<buyerUid>".
      Messages live in a subcollection under that doc. Both the buyer and
@@ -417,7 +433,7 @@ const DeltaStore = (() => {
   }
 
   return {
-    ready, getAll, getById, add, getSaved, isSaved, toggleSaved, onListingsChange, newId, uploadPhotos,
+    ready, getAll, getById, add, markAsSold, getSaved, isSaved, toggleSaved, onListingsChange, newId, uploadPhotos,
     getCurrentUid, getOrCreateChat, sendMessage, onChatMessages, onMyChats
   };
 })();

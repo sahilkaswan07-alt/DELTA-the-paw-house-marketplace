@@ -52,6 +52,14 @@
         🛡️ Verify This Pet
       </a>
 
+      <!-- Seller-only control — same visibility rule as the verify link
+           above: only the listing's own seller (pet.sellerId === myUid)
+           ever sees this button. Hidden for every other visitor. -->
+      <button id="markSoldBtn" class="btn-primary"
+         style="display:none; margin:6px 0 4px; width:100%; border:none; cursor:pointer; background:linear-gradient(135deg,#52525b,#27272a);">
+        🏷️ Mark as Sold
+      </button>
+
       <h1 class="pet-title" id="petTitle">—</h1>
       <div class="price-row">
         <p class="pet-price" id="petPriceOut">—</p>
@@ -223,6 +231,33 @@
       text-align: center;
       margin-bottom: .6rem;
     }
+
+    /* ===== SOLD / REHOMED — mirrors the badge on home.html ===== */
+    .gallery-main { position: relative; }
+    .sold-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13,15,20,0.6);
+    }
+    .sold-overlay span {
+      display: block;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.4;
+      border: 1.5px solid rgba(255,255,255,0.85);
+      border-radius: 40px;
+      padding: .5rem 1.1rem;
+      transform: rotate(-8deg);
+    }
+    .price-row.is-sold .pet-price { text-decoration: line-through; opacity: .65; }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js" defer></script>
@@ -358,6 +393,48 @@
     if (isOwner) {
       sellerVerifyLink.href = `verify.html?id=${encodeURIComponent(pet.id)}`;
     }
+
+    // ===== seller-only "Mark as Sold" control =====
+    // Same field names home.html checks for, so both pages agree on what "sold" means.
+    function isPetSold(p){
+      return p.sold === true ||
+             p.status === 'sold' ||
+             p.listingStatus === 'sold' ||
+             p.availability === 'sold';
+    }
+
+    function paintSoldState(sold){
+      if (!sold) return;
+      if (!mainPhoto.querySelector('.sold-overlay')) {
+        mainPhoto.insertAdjacentHTML('beforeend', `<div class="sold-overlay"><span>Sold /<br>Successfully Rehomed</span></div>`);
+      }
+      document.querySelector('.price-row').classList.add('is-sold');
+      markSoldBtn.style.display = 'none';
+    }
+
+    const markSoldBtn = document.getElementById('markSoldBtn');
+    if (isOwner && !isPetSold(pet)) {
+      markSoldBtn.style.display = 'block';
+    }
+    paintSoldState(isPetSold(pet));
+
+    markSoldBtn.addEventListener('click', async () => {
+      if (!confirm(`Mark ${pet.name} as Sold / Successfully Rehomed? This will be visible to everyone browsing the marketplace.`)) return;
+      markSoldBtn.disabled = true;
+      markSoldBtn.textContent = 'Marking…';
+      try {
+        if (typeof DeltaStore.markAsSold !== 'function') {
+          throw new Error('Marking as sold isn\'t wired up in data.js yet — see the DeltaStore.markAsSold snippet.');
+        }
+        await DeltaStore.markAsSold(pet.id);
+        pet.sold = true;
+        paintSoldState(true);
+      } catch (err) {
+        alert(err.message || 'Could not mark this listing as sold. Please try again.');
+        markSoldBtn.disabled = false;
+        markSoldBtn.textContent = '🏷️ Mark as Sold';
+      }
+    });
 
     // ===== verification badge (color = status, per home.html legend) =====
     if (typeof DeltaVerify !== 'undefined') {
