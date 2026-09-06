@@ -33,6 +33,37 @@
     color: #0d0f14;
   }
   .field-hint { font-size: .74rem; color: #7a7a8c; margin-top: .35rem; }
+
+  /* Agree-to-terms checkbox — Step 3, before Publish */
+  .agree-check {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    margin: 1.2rem 0 .3rem;
+    padding: .9rem 1rem;
+    border: 1px solid rgba(244,162,77,0.3);
+    background: rgba(244,162,77,0.06);
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: .8rem;
+    line-height: 1.55;
+    color: #c9c9d6;
+  }
+  .agree-check input[type="checkbox"] {
+    margin-top: .2rem;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    accent-color: #f4a24d;
+    cursor: pointer;
+  }
+  .agree-check a { color: #f4a24d; text-decoration: underline; }
+  .agree-check a:hover { color: #e07b7b; }
+  .btn-publish:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    filter: grayscale(.3);
+  }
 </style>
 </head>
 <body>
@@ -43,8 +74,7 @@
   <nav class="navbar">
     <a href="home.html" class="nav-logo">Δ Delta</a>
     <ul class="nav-links">
-      <li><a href="home.html"><span class="nav-text">Home</span></a></li>
-      <li><a href="home.html"><span class="nav-text">Marketplace</span></a></li>
+      <li><a href="home.html"><span class="nav-text">Home</span></a></li>      
       <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
       <li><a href="adoption.html"><span class="nav-text">Adopt</span></a></li>
       <li><a href="home.html" class="nav-cta">← Back</a></li>
@@ -182,9 +212,14 @@
           </div>
         </div>
 
+        <label class="agree-check" id="agreeCheckWrap">
+          <input type="checkbox" id="agreeCheckbox">
+          <span>I agree to Delta's <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, and confirm I have the legal right to sell/rehome this pet and will comply with all applicable animal-welfare, vaccination, and ownership laws.</span>
+        </label>
+
         <div class="form-nav">
           <button class="btn-secondary" id="toStep2b">← Back</button>
-          <button class="btn-publish" id="publishBtn">Publish Listing 🚀</button>
+          <button class="btn-publish" id="publishBtn" disabled>Publish Listing 🚀</button>
         </div>
       </div>
 
@@ -204,10 +239,12 @@
 
   <footer class="footer">
     <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
-    <br>
-     <a class="sahil-kaswan">Designed by: Dr. Sahil Choudhary
-        Contact no. 7300479727
-      </a>
+    <p style="margin-top:.4rem;">
+      <a href="terms.html" style="color:#7a7a8c; text-decoration:underline;">Terms &amp; Conditions</a>
+      &nbsp;·&nbsp;
+      <a href="privacy.html" style="color:#7a7a8c; text-decoration:underline;">Privacy Policy</a>
+    </p>
+   
   </footer>
 
   <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
@@ -274,6 +311,13 @@
   modeSaleBtn.addEventListener('click', () => { postMode = 'sale'; applyMode(); });
   modeAdoptBtn.addEventListener('click', () => { postMode = 'adoption'; applyMode(); });
   applyMode();
+
+  /* ===== AGREE-TO-TERMS CHECKBOX — gates the Publish button ===== */
+  const agreeCheckbox = document.getElementById('agreeCheckbox');
+  const publishBtnEl = document.getElementById('publishBtn');
+  agreeCheckbox.addEventListener('change', () => {
+    publishBtnEl.disabled = !agreeCheckbox.checked;
+  });
 
   /* ===== PHOTO UPLOAD PREVIEW =====
      Placed early and kept independent of DeltaStore so thumbnail
@@ -384,6 +428,11 @@
     const price = Number(document.getElementById('petPrice').value) || 0;
     const files = Array.from(photoInput.files).slice(0, 6);
     const sellerPhone = document.getElementById('petSellerPhone').value.trim();
+
+    if (!agreeCheckbox.checked) {
+      alert('Please agree to the Terms & Conditions and Privacy Policy before publishing.');
+      return;
+    }
 
     if (!sellerPhone) {
       alert('Please add a phone number so buyers can call you.');

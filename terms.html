@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Conditions — Δ Delta Paw House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="home.css">
+<style>
+  .legal-wrap{
+    position:relative; z-index:1;
+    max-width:850px; margin:0 auto;
+    padding:7.5rem 1.5rem 5rem;
+  }
+  .legal-head{ text-align:center; margin-bottom:2.4rem; }
+  .legal-head h1{
+    font-family:'Playfair Display', serif;
+    font-weight:900;
+    font-size:clamp(1.7rem, 4.5vw, 2.3rem);
+    background:linear-gradient(135deg, #c2410c, #be123c, #7e22ce);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:.5rem;
+  }
+  .legal-head p{ color:var(--muted); font-size:.85rem; }
+  .legal-card{
+    background:var(--card);
+    border:1px solid rgba(194,65,12,0.18);
+    border-radius:22px;
+    padding:2rem 1.9rem;
+    box-shadow:0 0 24px rgba(194,65,12,0.05), 0 2px 18px rgba(20,20,30,0.06);
+  }
+  .legal-card h2{
+    font-family:'Playfair Display', serif;
+    font-size:1.15rem;
+    font-weight:800;
+    color:var(--accent);
+    margin:1.8rem 0 .7rem;
+  }
+  .legal-card h2:first-child{ margin-top:0; }
+  .legal-card p, .legal-card li{
+    font-size:.88rem;
+    line-height:1.75;
+    color:var(--text);
+    margin-bottom:.6rem;
+  }
+  .legal-card ul, .legal-card ol{ padding-left:1.3rem; margin-bottom:.8rem; }
+  .legal-card strong{ color:var(--accent2); }
+  .legal-note{
+    background:rgba(190,18,60,0.06);
+    border:1px solid rgba(190,18,60,0.25);
+    border-radius:14px;
+    padding:1rem 1.1rem;
+    margin-bottom:1.6rem;
+  }
+  .legal-note p{ font-size:.82rem; margin-bottom:0; color:var(--text); }
+  .legal-updated{
+    text-align:center; color:var(--muted); font-size:.78rem;
+    margin-top:1.6rem;
+  }
+  .toc{
+    background:rgba(194,65,12,0.05);
+    border:1px solid rgba(194,65,12,0.15);
+    border-radius:14px;
+    padding:1rem 1.3rem;
+    margin-bottom:1.8rem;
+  }
+  .toc p{ font-weight:700; color:var(--accent); font-size:.8rem; margin-bottom:.5rem; text-transform:uppercase; letter-spacing:.05em; }
+  .toc ol{ margin-bottom:0; }
+  .toc a{ color:var(--muted); text-decoration:none; font-size:.83rem; }
+  .toc a:hover{ color:var(--accent); }
+  @media(max-width:480px){
+    .legal-wrap{ padding:6.5rem 1rem 3rem; }
+    .legal-card{ padding:1.5rem 1.2rem; border-radius:18px; }
+  }
+</style>
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">Δ Delta</a>
+    <div class="navbar-right">
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="home.html"><span class="nav-text">Home</span></a></li>      
+      <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="adoption.html"><span class="nav-text">Adopt</span></a></li>
+      <li><a href="postpet.html"><span class="nav-text">Sell</span></a></li>
+      <li><a href="about.html"><span class="nav-text">About</span></a></li>
+      <li><a href="home.html" class="nav-cta">Paw House</a></li>
+    </ul>
+  </nav>
+
+  <main class="legal-wrap">
+    <div class="legal-head">
+      <h1>Terms &amp; Conditions</h1>
+      <p>Please read carefully before using Δ Delta — Paw House Marketplace</p>
+    </div>
+
+    <div class="legal-card">
+
+      <div class="legal-note">
+        <p><strong>In short:</strong> Delta is a listing platform only. We connect independent pet owners/sellers with potential buyers. We do not own, house, breed, buy, sell, transport, or take custody of any animal listed on the platform, and we are not a party to any transaction between users.</p>
+      </div>
+
+      <div class="toc">
+        <p>Contents</p>
+        <ol>
+          <li><a href="#accept">Acceptance of Terms</a></li>
+          <li><a href="#platform">Nature of the Platform</a></li>
+          <li><a href="#eligibility">Eligibility &amp; Accounts</a></li>
+          <li><a href="#sellers">Seller Obligations</a></li>
+          <li><a href="#buyers">Buyer Obligations &amp; Due Diligence</a></li>
+          <li><a href="#verification">Verification Badges</a></li>
+          <li><a href="#prohibited">Prohibited Listings &amp; Conduct</a></li>
+          <li><a href="#payments">Payments &amp; Transactions</a></li>
+          <li><a href="#warranty">No Warranty; Disclaimer</a></li>
+          <li><a href="#liability">Limitation of Liability</a></li>
+          <li><a href="#indemnity">Indemnification</a></li>
+          <li><a href="#ip">Intellectual Property</a></li>
+          <li><a href="#content">Content, Removal &amp; Termination</a></li>
+          <li><a href="#third">Third-Party Links &amp; Services</a></li>
+          <li><a href="#privacy">Privacy</a></li>
+          <li><a href="#law">Governing Law &amp; Dispute Resolution</a></li>
+          <li><a href="#changes">Changes to These Terms</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ol>
+      </div>
+
+      <h2 id="accept">1. Acceptance of Terms</h2>
+      <p>By accessing or using the Δ Delta website, mobile experience, or any related service (collectively, the "<strong>Platform</strong>," "<strong>Delta</strong>," "<strong>we</strong>," "<strong>us</strong>"), you ("<strong>User</strong>," "<strong>you</strong>") agree to be bound by these Terms &amp; Conditions ("<strong>Terms</strong>") and our Privacy Policy. If you do not agree to these Terms, you must not access or use the Platform. If you use the Platform on behalf of an organization, you represent that you have authority to bind that organization to these Terms.</p>
+
+      <h2 id="platform">2. Nature of the Platform</h2>
+      <p>Delta is an online marketplace/intermediary that allows independent, third-party pet owners and sellers ("<strong>Sellers</strong>") to publish listings for animals, and allows other users ("<strong>Buyers</strong>") to view, search, and contact Sellers about those listings.</p>
+      <ul>
+        <li>Delta does <strong>not</strong> own, breed, possess, house, board, transport, buy, or sell any animal listed on the Platform.</li>
+        <li>Delta does <strong>not</strong> act as a seller, breeder, agent, broker, or party to any sale, adoption, or transfer arranged between Users.</li>
+        <li>Any agreement, sale, adoption, or exchange of an animal occurs solely and directly between the Buyer and the Seller. Delta is not a party to that agreement and assumes no responsibility or liability arising from it.</li>
+        <li>Listings, descriptions, prices, photos, and claims about an animal (breed, age, health, vaccination status, pedigree, etc.) are created and supplied by the Seller. Delta does not independently verify the accuracy of this information except where an explicit "Verified" badge process, described in Section 6, has been completed.</li>
+      </ul>
+
+      <h2 id="eligibility">3. Eligibility &amp; Accounts</h2>
+      <ul>
+        <li>You must be at least 18 years old, or the age of legal majority in your jurisdiction, and legally capable of entering into a binding contract to use the Platform.</li>
+        <li>You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account.</li>
+        <li>You agree to provide accurate, current, and complete information when creating an account or a listing, and to keep that information up to date.</li>
+        <li>Delta may suspend or terminate accounts that provide false information, violate these Terms, or are used for fraudulent, unlawful, or abusive purposes.</li>
+      </ul>
+
+      <h2 id="sellers">4. Seller Obligations</h2>
+      <p>Sellers are solely and independently responsible for complying with all applicable laws, regulations, and standards relating to the animals they list and the transactions they conduct, including but not limited to:</p>
+      <ul>
+        <li><strong>Animal welfare</strong> — providing humane care, housing, feeding, and treatment consistent with applicable animal-welfare laws (including, where applicable, the Prevention of Cruelty to Animals Act and related state rules).</li>
+        <li><strong>Breeding &amp; registration</strong> — holding any breeder license, registration, or permit required by local, state, or national authorities before advertising or selling offspring.</li>
+        <li><strong>Ownership &amp; title</strong> — confirming they have clear legal right and authority to sell, rehome, or transfer the animal listed.</li>
+        <li><strong>Vaccination &amp; health</strong> — ensuring animals have appropriate vaccinations, veterinary checks, and health documentation as required by law or represented in the listing.</li>
+        <li><strong>Transport</strong> — complying with all transport, quarantine, and interstate/international movement regulations applicable to the species and route, where a transaction involves transporting an animal.</li>
+        <li><strong>Species &amp; protected-animal law</strong> — not listing any species whose sale, breeding, keeping, or trade is prohibited or restricted under applicable law, including the Wildlife Protection Act, 1972 (India) and CITES, or any equivalent law in the Seller's jurisdiction.</li>
+        <li><strong>Accurate representation</strong> — ensuring listing details (breed, age, health, price, location, and photos) are truthful and not misleading.</li>
+      </ul>
+      <p>Delta bears no responsibility for a Seller's failure to comply with any of the above, and reserves the right (but has no obligation) to remove listings that appear to violate applicable law or these Terms.</p>
+
+      <h2 id="buyers">5. Buyer Obligations &amp; Due Diligence</h2>
+      <p>Buyers are solely responsible for exercising their own judgment and diligence before completing any transaction, including:</p>
+      <ul>
+        <li>Independently verifying the Seller's identity, the animal's health, age, breed, vaccination status, and any documents or claims made in a listing.</li>
+        <li>Meeting the Seller and viewing the animal in person (or through a trusted, verifiable process) before making any payment, wherever reasonably possible.</li>
+        <li>Complying with any local laws governing pet ownership, licensing, or importation applicable to the Buyer.</li>
+        <li>Understanding that any advance payment, deposit, or full payment made to a Seller is made entirely at the Buyer's own risk and discretion.</li>
+      </ul>
+
+      <h2 id="verification">6. Verification Badges</h2>
+      <p>Delta may operate an optional listing-verification process, indicated by status badges (e.g., Pending, Under Review, More Info Needed, Verified, Unsuccessful) shown on a listing.</p>
+      <ul>
+        <li>A "Verified" badge indicates only that the Seller-submitted information for that listing was reviewed against Delta's internal checklist at a point in time. It is <strong>not</strong> a guarantee, certification, or warranty of the animal's health, breed, pedigree, legal ownership, or of the transaction's outcome.</li>
+        <li>Verification exists to reduce the risk of fake listings and misleading information and to support trust between Buyers and Sellers — it does not transfer any responsibility from the Seller (or Buyer) to Delta.</li>
+        <li>Buyers should still independently verify a Seller and an animal, in person, before paying — verification status is one input, not a substitute for due diligence.</li>
+      </ul>
+
+      <h2 id="prohibited">7. Prohibited Listings &amp; Conduct</h2>
+      <p>You may not use the Platform to list, offer, request, or facilitate:</p>
+      <ul>
+        <li>Any animal whose sale, transfer, breeding, or possession is prohibited or restricted by applicable law, including endangered or protected species.</li>
+        <li>Illegal wildlife trade, animal fighting, or any activity that constitutes cruelty to animals.</li>
+        <li>Stolen animals, or animals obtained without lawful ownership or authority.</li>
+        <li>Listings containing false, deceptive, or misleading information.</li>
+        <li>Any content that is unlawful, defamatory, obscene, or that infringes a third party's rights.</li>
+        <li>Attempts to circumvent, exploit, or interfere with the Platform's verification, security, or payment-adjacent features.</li>
+      </ul>
+      <p>Delta may remove any listing or content, and suspend or terminate any account, that it believes in good faith violates this Section, without prior notice.</p>
+
+      <h2 id="payments">8. Payments &amp; Transactions</h2>
+      <ul>
+        <li>Delta does not process, hold, escrow, or guarantee any payment between Users. All payments are made directly between Buyer and Seller, through means they arrange themselves, entirely outside the Platform's control.</li>
+        <li>Delta is not responsible for any financial loss, non-delivery, non-payment, fraud, or dispute arising from a transaction between a Buyer and a Seller, including advance payments or deposits made before an animal is handed over.</li>
+        <li><strong>Never send money without independently verifying the Seller and the animal.</strong> Paying based solely on online information, without meeting the Seller or verifying details, is done entirely at the paying party's own risk.</li>
+        <li>Delta strongly recommends completing any exchange of money in person, alongside physical verification of the animal and relevant documents.</li>
+      </ul>
+
+      <h2 id="warranty">9. No Warranty; Disclaimer</h2>
+      <p>The Platform, and all listings, content, and verification statuses on it, are provided "<strong>as is</strong>" and "<strong>as available</strong>," without warranties of any kind, whether express, implied, or statutory, including implied warranties of merchantability, fitness for a particular purpose, accuracy, or non-infringement. Delta does not warrant that listings are accurate, complete, current, that animals are healthy or as described, or that any transaction will be completed safely or successfully.</p>
+
+      <h2 id="liability">10. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by applicable law, Delta and its founders, officers, employees, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of money, animals, data, goodwill, or other intangible losses, resulting from:</p>
+      <ul>
+        <li>Your use of, or inability to use, the Platform;</li>
+        <li>Any transaction, communication, or dispute between a Buyer and a Seller;</li>
+        <li>The condition, health, breed, legality of sale, or ownership status of any animal listed;</li>
+        <li>Any payment made, lost, or disputed between Users;</li>
+        <li>Unauthorized access to or alteration of your data.</li>
+      </ul>
+      <p>Where liability cannot be fully excluded under applicable law, Delta's aggregate liability for any claim arising from your use of the Platform is limited to the greater of the fees you paid to Delta (if any) in the preceding twelve months, or a nominal sum as required by law.</p>
+
+      <h2 id="indemnity">11. Indemnification</h2>
+      <p>You agree to indemnify and hold harmless Delta, its founders, officers, employees, and affiliates from any claim, demand, loss, or damages (including reasonable legal fees) arising out of: your breach of these Terms; your listing or purchase of an animal; your violation of any law or third-party right; or any dispute between you and another User.</p>
+
+      <h2 id="ip">12. Intellectual Property</h2>
+      <p>The Platform's design, branding, logos, and underlying software are owned by Delta or its licensors and may not be copied, reproduced, or used without prior written permission. By posting a listing, you grant Delta a non-exclusive, royalty-free license to display your submitted content (text, photos) on the Platform for the purpose of operating the marketplace.</p>
+
+      <h2 id="content">13. Content, Removal &amp; Termination</h2>
+      <p>Delta may, at its discretion and without liability, remove any listing, edit visible verification status, or suspend or terminate any account that violates these Terms, applicable law, or that Delta otherwise reasonably believes poses a risk to Users or animals. You may stop using the Platform, and request account or listing deletion, at any time by contacting us.</p>
+
+      <h2 id="third">14. Third-Party Links &amp; Services</h2>
+      <p>The Platform may link to or integrate third-party services (e.g., communication apps, payment methods Users choose themselves, maps). Delta does not control and is not responsible for the content, policies, or practices of any third-party service.</p>
+
+      <h2 id="privacy">15. Privacy</h2>
+      <p>Our collection and use of personal information is described in our Privacy Policy. By using the Platform, you consent to that collection and use.</p>
+
+      <h2 id="law">16. Governing Law &amp; Dispute Resolution</h2>
+      <p>These Terms are governed by the laws of India, without regard to conflict-of-law principles. Subject to applicable consumer-protection law, any dispute arising out of or relating to these Terms or the Platform shall be subject to the exclusive jurisdiction of the courts located in India. Users are encouraged to first attempt to resolve disputes directly with the other User involved in a transaction, and to contact Delta support for platform-related (not transaction-related) issues.</p>
+
+      <h2 id="changes">17. Changes to These Terms</h2>
+      <p>Delta may update these Terms from time to time. Material changes will be reflected by an updated "Last updated" date on this page. Continued use of the Platform after changes take effect constitutes acceptance of the revised Terms.</p>
+
+      <h2 id="contact">18. Contact Us</h2>
+      <p>For questions about these Terms, please contact Delta Paw House through the details below or the contact options available on our About page.</p>
+      <p>Founder: Dr. Sahil Choudhary · CEO: Anil Choudhary</p>
+
+      <p class="legal-updated">Last updated: 4 September 2026</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
+    <p style="margin-top:.4rem;"><a href="terms.html" style="color:var(--muted); text-decoration:underline;">Terms &amp; Conditions</a></p>
+    
+  </footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  /* lightweight background canvas so this page visually matches home.html */
+  const canvas = document.getElementById('bg-canvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const g = ctx.createRadialGradient(canvas.width*0.3, canvas.height*0.3, 0, canvas.width*0.3, canvas.height*0.3, 500);
+      g.addColorStop(0, 'rgba(194,65,12,0.05)');
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+    window.addEventListener('resize', () => { resize(); draw(); });
+    resize(); draw();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Δ Delta Paw House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="home.css">
+<style>
+  .legal-wrap{
+    position:relative; z-index:1;
+    max-width:850px; margin:0 auto;
+    padding:7.5rem 1.5rem 5rem;
+  }
+  .legal-head{ text-align:center; margin-bottom:2.4rem; }
+  .legal-head h1{
+    font-family:'Playfair Display', serif;
+    font-weight:900;
+    font-size:clamp(1.7rem, 4.5vw, 2.3rem);
+    background:linear-gradient(135deg, #c2410c, #be123c, #7e22ce);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:.5rem;
+  }
+  .legal-head p{ color:var(--muted); font-size:.85rem; }
+  .legal-card{
+    background:var(--card);
+    border:1px solid rgba(194,65,12,0.18);
+    border-radius:22px;
+    padding:2rem 1.9rem;
+    box-shadow:0 0 24px rgba(194,65,12,0.05), 0 2px 18px rgba(20,20,30,0.06);
+  }
+  .legal-card h2{
+    font-family:'Playfair Display', serif;
+    font-size:1.15rem;
+    font-weight:800;
+    color:var(--accent);
+    margin:1.8rem 0 .7rem;
+  }
+  .legal-card h2:first-child{ margin-top:0; }
+  .legal-card h3{
+    font-size:.92rem;
+    font-weight:800;
+    color:var(--text);
+    margin:1rem 0 .4rem;
+  }
+  .legal-card p, .legal-card li{
+    font-size:.88rem;
+    line-height:1.75;
+    color:var(--text);
+    margin-bottom:.6rem;
+  }
+  .legal-card ul, .legal-card ol{ padding-left:1.3rem; margin-bottom:.8rem; }
+  .legal-card strong{ color:var(--accent2); }
+  .legal-note{
+    background:rgba(190,18,60,0.06);
+    border:1px solid rgba(190,18,60,0.25);
+    border-radius:14px;
+    padding:1rem 1.1rem;
+    margin-bottom:1.6rem;
+  }
+  .legal-note p{ font-size:.82rem; margin-bottom:0; color:var(--text); }
+  .legal-updated{
+    text-align:center; color:var(--muted); font-size:.78rem;
+    margin-top:1.6rem;
+  }
+  .toc{
+    background:rgba(194,65,12,0.05);
+    border:1px solid rgba(194,65,12,0.15);
+    border-radius:14px;
+    padding:1rem 1.3rem;
+    margin-bottom:1.8rem;
+  }
+  .toc p{ font-weight:700; color:var(--accent); font-size:.8rem; margin-bottom:.5rem; text-transform:uppercase; letter-spacing:.05em; }
+  .toc ol{ margin-bottom:0; }
+  .toc a{ color:var(--muted); text-decoration:none; font-size:.83rem; }
+  .toc a:hover{ color:var(--accent); }
+  .data-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:1rem;
+    font-size:.82rem;
+  }
+  .data-table th, .data-table td{
+    text-align:left;
+    padding:.55rem .7rem;
+    border-bottom:1px solid rgba(194,65,12,0.15);
+    vertical-align:top;
+  }
+  .data-table th{
+    color:var(--accent);
+    font-weight:800;
+    font-size:.75rem;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  .fillme{ color:var(--accent2); font-weight:700; }
+  @media(max-width:480px){
+    .legal-wrap{ padding:6.5rem 1rem 3rem; }
+    .legal-card{ padding:1.5rem 1.2rem; border-radius:18px; }
+    .data-table{ font-size:.76rem; }
+    .data-table th, .data-table td{ padding:.45rem .5rem; }
+  }
+</style>
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">Δ Delta</a>
+    <div class="navbar-right">
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="home.html"><span class="nav-text">Home</span></a></li>      
+      <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="adoption.html"><span class="nav-text">Adopt</span></a></li>
+      <li><a href="postpet.html"><span class="nav-text">Sell</span></a></li>
+      <li><a href="about.html"><span class="nav-text">About</span></a></li>
+      <li><a href="home.html" class="nav-cta">Paw House</a></li>
+    </ul>
+  </nav>
+
+  <main class="legal-wrap">
+    <div class="legal-head">
+      <h1>Privacy Policy</h1>
+      <p>How Δ Delta collects, uses, and protects your information</p>
+    </div>
+
+    <div class="legal-card">
+
+      <div class="legal-note">
+        <p><strong>In short:</strong> We collect the information needed to run the marketplace — your account details, listing content, and basic usage data. We don't sell your personal data. Buyers and Sellers see each other's contact details only when needed to complete a transaction, which happens directly between them, not through Delta.</p>
+      </div>
+
+      <div class="toc">
+        <p>Contents</p>
+        <ol>
+          <li><a href="#who">1. Who We Are</a></li>
+          <li><a href="#scope">2. Scope of This Policy</a></li>
+          <li><a href="#collect">3. Information We Collect</a></li>
+          <li><a href="#use">4. How We Use Your Information</a></li>
+          <li><a href="#legal-basis">5. Legal Basis / Consent</a></li>
+          <li><a href="#share">6. How We Share Information</a></li>
+          <li><a href="#thirdparty">7. Third-Party Services We Use</a></li>
+          <li><a href="#cookies">8. Cookies &amp; Tracking</a></li>
+          <li><a href="#retention">9. Data Retention</a></li>
+          <li><a href="#security">10. Data Security</a></li>
+          <li><a href="#rights">11. Your Rights &amp; Choices</a></li>
+          <li><a href="#children">12. Children's Privacy</a></li>
+          <li><a href="#grievance">13. Grievance Officer</a></li>
+          <li><a href="#transfer">14. Cross-Border Data</a></li>
+          <li><a href="#changes">15. Changes to This Policy</a></li>
+          <li><a href="#contact">16. Contact Us</a></li>
+        </ol>
+      </div>
+
+      <h2 id="who">1. Who We Are</h2>
+      <p>This Privacy Policy is issued by <strong>Delta – The Paw House Marketplace</strong> (a sole proprietorship), operating the Δ Delta — Paw House Marketplace platform ("<strong>Delta</strong>," "<strong>we</strong>," "<strong>us</strong>"), registered office at 4JSL, Bhairun Chhani, Bhadra, Hanumangarh, Rajasthan – 335511 
+        <br><strong>Sanstha Aadhaar Number (SAN):</strong> 0689210000000018;
+        <br> <strong>Udyam Registration No.:</strong> UDYAM-RJ-16-0090806.
+        <br> DELTA is an online marketplace/intermediary platform connecting independent pet owners/sellers with potential buyers. DELTA does not own, possess, house, buy or sell the animals listed by users and does not act as the seller or breeder. Sellers are independently responsible for complying with all applicable animal-welfare, breeding, registration, ownership, vaccination, transport and other legal requirements applicable to their animals and transactions. <a href="terms.html" style="color:var(--accent);">Terms &amp; Conditions</a>.</p>
+
+      <h2 id="scope">2. Scope of This Policy</h2>
+      <p>This Policy explains how we handle personal information of Buyers, Sellers, and visitors who use our website and related services (the "Platform"). It does not cover the privacy practices of third-party services you use to communicate with, meet, or pay another User directly — those are governed by that third party's own policy.</p>
+
+      <h2 id="collect">3. Information We Collect</h2>
+      <table class="data-table">
+        <tr><th>Category</th><th>Examples</th></tr>
+        <tr><td>Account information</td><td>Name, email address, phone number, password (hashed), city</td></tr>
+        <tr><td>Listing content</td><td>Pet name, breed, age, price, description, city, photos you upload</td></tr>
+        <tr><td>Communications</td><td>Messages or enquiries sent through the Platform, and any correspondence with our support/grievance team</td></tr>
+        <tr><td>Verification data</td><td>Documents or details voluntarily submitted for the optional listing-verification process</td></tr>
+        <tr><td>Usage data</td><td>Pages viewed, searches, filters used, saved listings, device/browser type, approximate location (via IP), timestamps</td></tr>
+        <tr><td>Authentication data</td><td>Sign-in data if you log in via Firebase Authentication or a similar provider</td></tr>
+      </table>
+      <p>We do not intentionally collect payment card numbers, bank account details, or other financial-account information, since payments between Buyers and Sellers happen directly between them, outside the Platform.</p>
+
+      <h2 id="use">4. How We Use Your Information</h2>
+      <ul>
+        <li>To create and manage your account and display your listings</li>
+        <li>To operate search, filters, saved listings, and the verification-badge system</li>
+        <li>To enable Buyers and Sellers to contact each other about a listing</li>
+        <li>To respond to support requests and grievances</li>
+        <li>To detect and prevent fraud, fake listings, and misuse of the Platform</li>
+        <li>To send service-related notifications (e.g., verification status updates)</li>
+        <li>To improve the Platform's design, performance, and features</li>
+        <li>To comply with applicable law or respond to lawful requests from authorities</li>
+      </ul>
+      <p>We do not use your personal information for automated decision-making that produces legal or similarly significant effects on you.</p>
+
+      <h2 id="legal-basis">5. Legal Basis / Consent</h2>
+      <p>We process your personal data on the basis of your consent (given when you create an account, submit a listing, or otherwise use the Platform), to perform our role as a marketplace connecting you with other Users, and to comply with legal obligations. You may withdraw consent at any time by deleting your account or contacting us, subject to Section 9 (Data Retention).</p>
+
+      <h2 id="share">6. How We Share Information</h2>
+      <ul>
+        <li><strong>With other Users</strong> — your listing content and any contact details you choose to include are visible to Buyers/Sellers so a transaction can be arranged directly between you.</li>
+        <li><strong>With service providers</strong> — hosting, database, authentication, image storage, and similar technical providers who process data on our behalf, strictly to operate the Platform (see Section 7).</li>
+        <li><strong>For legal reasons</strong> — if required by law, court order, or to protect the rights, safety, or property of Delta, our Users, or the public (for example, in response to a report of a fake listing, fraud, or illegal wildlife trade).</li>
+        <li><strong>Business transfers</strong> — if Delta is involved in a merger, acquisition, or sale of assets, user information may be transferred as part of that transaction, subject to this Policy.</li>
+      </ul>
+      <p>We do not sell your personal information to third parties for their own marketing purposes.</p>
+
+      <h2 id="thirdparty">7. Third-Party Services We Use</h2>
+      <p>The Platform relies on third-party infrastructure providers to operate, which may process data on our behalf, including:</p>
+      <ul>
+        <li><strong>Firebase (Google)</strong> — authentication, database (Firestore), and hosting</li>
+        <li><strong>Cloudinary</strong> — storage and delivery of listing photos</li>
+      </ul>
+      <p>These providers process data under their own security and privacy commitments as our data processors. We may update this list as our technical stack changes; material changes will be reflected in this Policy.</p>
+
+      <h2 id="cookies">8. Cookies &amp; Tracking</h2>
+      <p>We may use cookies or similar local-storage technologies to keep you signed in, remember filters/preferences, and understand basic usage patterns. You can control cookies through your browser settings; disabling them may affect some Platform features (such as staying logged in).</p>
+
+      <h2 id="retention">9. Data Retention</h2>
+      <p>We retain account and listing information for as long as your account is active, and for a reasonable period afterward to resolve disputes, enforce our Terms, prevent fraud, and comply with legal obligations. You may request deletion of your account and associated data at any time (see Section 11); some information may be retained where required by law or legitimate business need (e.g., records of a reported fraudulent listing).</p>
+
+      <h2 id="security">10. Data Security</h2>
+      <p>We use reasonable administrative, technical, and organizational safeguards (such as authentication controls and access restrictions) to protect your information. However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security. You are responsible for keeping your account credentials confidential.</p>
+
+      <h2 id="rights">11. Your Rights &amp; Choices</h2>
+      <p>Subject to applicable law, you may:</p>
+      <ul>
+        <li>Access, correct, or update your account and listing information directly through the Platform</li>
+        <li>Request a copy of the personal data we hold about you</li>
+        <li>Request deletion of your account and personal data</li>
+        <li>Withdraw consent for optional processing (e.g., the verification process)</li>
+        <li>Opt out of non-essential notifications</li>
+      </ul>
+      <p>To exercise these rights, contact us using the details in Section 16. We will respond within a reasonable timeframe as required by applicable law.</p>
+
+      <h2 id="children">12. Children's Privacy</h2>
+      <p>The Platform is intended for users who are at least 18 years old, or the age of legal majority in their jurisdiction. We do not knowingly collect personal information from children. If we learn that a child's information has been submitted without appropriate consent, we will take steps to delete it.</p>
+
+      <h2 id="grievance">13. Grievance Officer</h2>
+      <p>In accordance with applicable Indian law (including the Information Technology Act, 2000 and rules made thereunder, and the Consumer Protection (E-Commerce) Rules, 2020), we have appointed a Grievance Officer to address complaints regarding privacy, data handling, or Platform content:</p>
+      <p><strong>
+        Name: Sahil<br>
+        Designation: Founder &amp; Grievance Officer<br>
+        Email: sahilkaswan07@gmail.com<br>
+        Phone: +91 7300479727<br>
+        Address: 4JSL, Bhairun Chhani, Bhadra, Hanumangarh, Rajasthan – 335511</strong>
+      </p>
+      <p>The Grievance Officer will acknowledge complaints within 48 hours and aim to resolve them within one month, as required by applicable rules.</p>
+
+      <h2 id="transfer">14. Cross-Border Data</h2>
+      <p>Some of our service providers (e.g., Firebase/Google, Cloudinary) may store or process data on servers located outside India. By using the Platform, you consent to this transfer, which is made subject to those providers' own security safeguards.</p>
+
+      <h2 id="changes">15. Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time. Material changes will be reflected by an updated "Last updated" date below. Continued use of the Platform after changes take effect constitutes acceptance of the revised Policy.</p>
+
+      <h2 id="contact">16. Contact Us</h2>
+      <p>For questions about this Privacy Policy or how we handle your data, contact us at:</p>
+      <p>
+        Email: sahilkaswan07@gmail.com<br>
+        Phone: +91 7300479727
+      </p>
+      <p>Founder: Dr. Sahil Choudhary · CEO: Anil Choudhary</p>
+
+      <p class="legal-updated">Last updated: 4 September 2026</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
+    <p style="margin-top:.4rem;">
+      <a href="terms.html" style="color:var(--muted); text-decoration:underline;">Terms &amp; Conditions</a>
+      &nbsp;·&nbsp;
+      <a href="privacy.html" style="color:var(--muted); text-decoration:underline;">Privacy Policy</a>
+    </p>
+  </footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  const canvas = document.getElementById('bg-canvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const g = ctx.createRadialGradient(canvas.width*0.3, canvas.height*0.3, 0, canvas.width*0.3, canvas.height*0.3, 500);
+      g.addColorStop(0, 'rgba(194,65,12,0.05)');
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+    window.addEventListener('resize', () => { resize(); draw(); });
+    resize(); draw();
+  }
+</script>
+</body>
+</html>
