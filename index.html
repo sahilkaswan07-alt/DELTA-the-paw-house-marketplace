@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Δ Delta — Paw House Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
+<style>
+  /* Added for pet verification status badges — kept inline so it
+     doesn't require editing home.css. Move into home.css anytime. */
+  .verify-legend{
+    display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:center;
+    margin-top:14px; font-size:.78rem; color:var(--muted,#7a7a8c);
+  }
+  .verify-legend span{ white-space:nowrap; }
+  .verify-badge{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 10px; border-radius:20px; font-size:.72rem; font-weight:600;
+    margin-top:6px;
+  }
+
+  /* Sold / Rehomed overlay on card photos — mirrors listing.html exactly */
+  .photo-wrap{ position:relative; }
+  .sold-overlay{
+    position:absolute; inset:0; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(13,15,20,0.6);
+  }
+  .sold-overlay span{
+    display:block; color:#fff; font-weight:800; font-size:1rem;
+    letter-spacing:.04em; text-transform:uppercase; text-align:center;
+    line-height:1.4; border:1.5px solid rgba(255,255,255,0.85);
+    border-radius:40px; padding:.5rem 1.1rem; transform:rotate(-8deg);
+  }
+</style>
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">Δ Delta</a>
+    <div class="navbar-right">
+      <button class="bell-btn" id="bellBtn" aria-label="Verification notice" title="Verification notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span class="bell-dot"></span>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html"><span class="nav-text">Home</span></a></li>
+      <li><a href="saved.html"><span class="nav-text">Saved</span></a></li>
+      <li><a href="adoption.html"><span class="nav-text">Adopt</span></a></li>
+      <li><a href="postpet.html"><span class="nav-text">Sell</span></a></li>
+      <li><a href="about.html"><span class="nav-text">About</span></a></li>
+      <li><a href="index.html" class="nav-cta">Paw House</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO / SEARCH -->
+  <section class="delta-hero">
+    <div class="premium-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 9l-5.2 4.4L17.4 21 12 17.3 6.6 21l1.6-7.6L3 9l6.6-.4L12 2z"/></svg>
+      Delta Marketplace
+    </div>
+    <h1 class="brand">Δ DELTA</h1>
+    <p class="tagline">The Paw House Marketplace — Buy • Sell</p>
+
+    <div class="search-wrap">
+      <input type="text" class="search-bar" id="searchInput" placeholder="🔍 Search pets...">
+    </div>
+
+    <div class="filters">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="dog">Dogs</button>
+      <button class="filter-chip" data-filter="cat">Cats</button>
+    </div>
+  </section>
+
+  <!-- LISTINGS -->
+  <section class="pets-section" id="listings">
+    <div class="sec-head">
+      <h2>Latest Listings 🐾</h2>
+      <p>Fresh pets looking for their forever home.</p>
+      <div class="verify-legend" id="verifyLegend"></div>
+    </div>
+
+    <div class="pets-grid" id="listingGrid">
+      <!-- cards are rendered here by JS from DeltaStore -->
+      <div class="pets-empty" id="emptyState" style="display:none;">
+        No pets match your search — try a different breed or filter.
+      </div>
+    </div>
+  </section>
+
+  <a href="postpet.html" class="post-pet-fab">+ Post Pet</a>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Δ Delta · Paw House Marketplace. Made with 🐾</p>
+    <p style="margin-top:.4rem;">
+      <a href="terms.html" style="color:var(--muted); text-decoration:underline;">Terms &amp; Conditions</a>
+      &nbsp;·&nbsp;
+      <a href="privacy.html" style="color:var(--muted); text-decoration:underline;">Privacy Policy</a>
+    </p>
+   
+  </footer>
+
+  <!-- VERIFICATION NOTICE MODAL -->
+  <div class="verify-modal-overlay" id="verifyModalOverlay">
+    <div class="verify-modal" role="dialog" aria-modal="true" aria-labelledby="verifyModalTitle">
+      <button class="verify-modal-close" id="verifyModalClose" aria-label="Close">✕</button>
+      <h3 id="verifyModalTitle">ध्यान रखें 🛡️🐾</h3>
+      <p class="vm-lead">Listing Live होना और Verified होना अलग-अलग चीजें हैं।</p>
+      <p>अब Delta Paw House पर आपके pet की safety और trust के लिए एक नया Verification System है।</p>
+
+      <ul class="vm-status-list">
+        <li><span class="vm-dot" style="background:#eab308;"></span> Yellow = Verification Pending</li>
+        <li><span class="vm-dot" style="background:#3b82f6;"></span> Blue = Under Review</li>
+        <li><span class="vm-dot" style="background:#f97316;"></span> Orange = More Info Needed</li>
+        <li><span class="vm-dot" style="background:#22c55e;"></span> Green = Delta Paw House Verified</li>
+        <li><span class="vm-dot" style="background:#ef4444;"></span> Red = Verification Unsuccessful</li>
+      </ul>
+
+      <p>Verified Badge का मतलब है कि submitted information को Delta Paw House ने review किया है।</p>
+
+      <div class="vm-warning">
+        <p class="vm-warning-title">⚠️ IMPORTANT MESSAGE</p>
+        <p>Delta Paw House Verification का मतलब यह नहीं है कि हम pet की health, breed, ownership या transaction की 100% guarantee दे रहे हैं।</p>
+        <p>Verification का उद्देश्य है: Fake listings और misleading information के risk को कम करना और buyers &amp; sellers के बीच trust बढ़ाना।</p>
+        <p>इसलिए कोई भी pet खरीदने या adopt करने से पहले: Seller से बात करें, pet को personally देखें और documents/details खुद verify करें।</p>
+        <p><strong>Never send money blindly.</strong> बिना proper verification के कोई payment न करें।</p>
+        <p>Seller को personally verify किए बिना, केवल online information के आधार पर payment करना buyer की अपनी responsibility है। Delta Paw House किसी buyer द्वारा seller को voluntarily किए गए payment, advance payment, या transaction से होने वाले financial loss की responsibility नहीं लेता।</p>
+      </div>
+
+      <div class="vm-footer">
+        <span>Founder: Dr. Sahil Choudhary</span>
+        <span>CEO: Anil Choudhary</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
+  <script src="firebaseconfig.js"></script>
+  <script src="cloudinaryconfig.js"></script>
+  <script src="verification.js"></script>
+  <script src="data.js"></script>
+<script>
+  /* ===== BACKGROUND CANVAS (unchanged) ===== */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const FOCAL = 560;
+  const COLS = [[244,162,77],[224,123,123],[201,111,208],[100,160,255]];
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function mkRing(i){ const col=COLS[i%COLS.length]; return {radius:180+i*70,tilt:(i*0.6)+Math.random()*0.4,spin:(Math.random()-.5)*0.012+0.004,rot:Math.random()*Math.PI*2,points:64,col,nodeOffset:Math.random()*Math.PI*2}; }
+  let rings=[];
+  function init(){ rings=Array.from({length:6},(_,i)=>mkRing(i)); }
+  let mouse={tx:0,ty:0.25}, camRotY=0, camRotX=0.25;
+  function project3D(x,y,z){ const cosY=Math.cos(camRotY),sinY=Math.sin(camRotY); let x1=x*cosY-z*sinY,z1=x*sinY+z*cosY; const cosX=Math.cos(camRotX),sinX=Math.sin(camRotX); let y1=y*cosX-z1*sinX,z2=y*sinX+z1*cosX; const scale=FOCAL/(FOCAL+z2+500); return{sx:W*.5+x1*scale,sy:H*.5+y1*scale,scale,z:z2}; }
+  function drawBlobs(t){ [{cx:W*.30+Math.sin(t*.30)*110,cy:H*.42+Math.cos(t*.20)*75,r:320,col:'244,162,77',a:.07},{cx:W*.72+Math.cos(t*.25)*90,cy:H*.60+Math.sin(t*.32)*65,r:250,col:'201,111,208',a:.07},{cx:W*.52+Math.sin(t*.18)*70,cy:H*.24+Math.cos(t*.22)*55,r:190,col:'100,160,255',a:.05}].forEach(({cx,cy,r,col,a})=>{ const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,`rgba(${col},${a})`); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }); }
+  function drawVignette(){ const g=ctx.createRadialGradient(W/2,H/2,H*.06,W/2,H/2,H*.80); g.addColorStop(0,'rgba(13,15,20,0)'); g.addColorStop(1,'rgba(13,15,20,.85)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+  let t=0;
+  function animate(){ requestAnimationFrame(animate); t+=.007; camRotY+=(mouse.tx-camRotY)*.02; camRotX+=(mouse.ty-camRotX)*.02; ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H); drawBlobs(t); const drawables=[]; rings.forEach(ring=>{ ring.rot+=ring.spin; const pts=[]; for(let p=0;p<=ring.points;p++){ const a=(p/ring.points)*Math.PI*2; const rx=Math.cos(a)*ring.radius,ry=Math.sin(a)*ring.radius*Math.sin(ring.tilt),rz=Math.sin(a)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); pts.push(project3D(rx*cs-rz*sn,ry,rx*sn+rz*cs)); } const avgZ=pts.reduce((s,p)=>s+p.z,0)/pts.length; drawables.push({ring,pts,avgZ}); const na=ring.nodeOffset+t*1.3; const nrx=Math.cos(na)*ring.radius,nry=Math.sin(na)*ring.radius*Math.sin(ring.tilt),nrz=Math.sin(na)*ring.radius*Math.cos(ring.tilt); const cs=Math.cos(ring.rot),sn=Math.sin(ring.rot); const node=project3D(nrx*cs-nrz*sn,nry,nrx*sn+nrz*cs); drawables.push({node,ring,avgZ:node.z,isNode:true}); }); drawables.sort((a,b)=>a.avgZ-b.avgZ); drawables.forEach(d=>{ if(d.isNode){ const{node,ring}=d; const depth=Math.max(0,Math.min(1,(node.z+500)/900)); const r=3+depth*4,alpha=.25+depth*.6; const halo=ctx.createRadialGradient(node.sx,node.sy,0,node.sx,node.sy,r*4); halo.addColorStop(0,`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(alpha*.5).toFixed(3)})`); halo.addColorStop(1,'transparent'); ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(node.sx,node.sy,r*4,0,Math.PI*2); ctx.fill(); ctx.fillStyle=`rgba(255,255,255,${alpha.toFixed(3)})`; ctx.beginPath(); ctx.arc(node.sx,node.sy,Math.max(r,1),0,Math.PI*2); ctx.fill(); } else { const{ring,pts}=d; const depth=Math.max(0,Math.min(1,(d.avgZ+500)/900)); ctx.beginPath(); ctx.strokeStyle=`rgba(${ring.col[0]},${ring.col[1]},${ring.col[2]},${(.08+depth*.22).toFixed(3)})`; ctx.lineWidth=.8+depth*1.2; pts.forEach((p,idx)=>idx===0?ctx.moveTo(p.sx,p.sy):ctx.lineTo(p.sx,p.sy)); ctx.stroke(); } }); drawVignette(); }
+  window.addEventListener('mousemove',e=>{ mouse.tx=((e.clientX/W)-.5)*0.6; mouse.ty=0.25+((e.clientY/H)-.5)*0.4; });
+  window.addEventListener('mouseleave',()=>{ mouse.tx=0; mouse.ty=0.25; });
+  resize(); init(); animate();
+  window.addEventListener('resize',()=>{ resize(); init(); });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ===== MOBILE NAV TOGGLE ===== */
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    navToggle.textContent = isOpen ? '✕' : '☰';
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.textContent = '☰';
+    });
+  });
+
+  /* ===== VERIFICATION NOTICE MODAL (bell icon) ===== */
+  const bellBtn = document.getElementById('bellBtn');
+  const verifyModalOverlay = document.getElementById('verifyModalOverlay');
+  const verifyModalClose = document.getElementById('verifyModalClose');
+
+  function openVerifyModal(){
+    verifyModalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeVerifyModal(){
+    verifyModalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  bellBtn.addEventListener('click', openVerifyModal);
+  verifyModalClose.addEventListener('click', closeVerifyModal);
+  verifyModalOverlay.addEventListener('click', (e) => {
+    if (e.target === verifyModalOverlay) closeVerifyModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeVerifyModal();
+  });
+
+  /* ===== RENDER LISTINGS FROM DeltaStore (Firestore, real-time) ===== */
+  const grid = document.getElementById('listingGrid');
+  const emptyState = document.getElementById('emptyState');
+  let allPets = [];
+
+  // A pet counts as sold if ANY of these fields say so — this covers
+  // whichever field name your postpet/admin flow ends up writing to
+  // Firestore. If your data uses a different key, just add it here.
+  function isPetSold(pet){
+    return pet.sold === true ||
+           pet.status === 'sold' ||
+           pet.listingStatus === 'sold' ||
+           pet.availability === 'sold';
+  }
+
+  function photoBlockHTML(pet){
+    const sold = isPetSold(pet);
+    const inner = (pet.photos && pet.photos.length > 0)
+      ? `<div class="pet-photo" style="background-image:url('${pet.photos[0]}');background-size:cover;background-position:center;"></div>`
+      : `<div class="pet-photo emoji-photo">${pet.photo}</div>`;
+    const overlay = sold
+      ? `<div class="sold-overlay"><span>Sold /<br>Successfully Rehomed</span></div>`
+      : '';
+    return `<div class="photo-wrap">${inner}${overlay}</div>`;
+  }
+
+  // Every card shows a status badge — a pet with no verification request
+  // yet reads as "Verification Pending" rather than a separate unverified state.
+  let verifyStatusMap = {};
+
+  function verifyBadgeHTML(petId){
+    if (typeof DeltaVerify === 'undefined') return '';
+    const status = verifyStatusMap[petId] || DeltaVerify.STATUS.PENDING;
+    const meta = DeltaVerify.STATUS_META[status];
+    return `<span class="verify-badge" style="background:${meta.color}22;color:${meta.color};border:1px solid ${meta.color}66;">${meta.dot} ${status === 'approved' ? 'Delta Paw House Verified' : meta.label}</span>`;
+  }
+
+  function cardHTML(pet, saved){
+    const sold = isPetSold(pet);
+    return `
+      <div class="pet-box${sold ? ' is-sold' : ''}" data-id="${pet.id}" data-type="${pet.category}" data-name="${(pet.name||'').toLowerCase()} ${(pet.breed||'').toLowerCase()}">
+        ${photoBlockHTML(pet)}
+        <div class="pet-info">
+          <div class="pet-name">${pet.name}</div>
+          <div class="pet-breed">📍 ${pet.city}</div>
+          <div class="pet-meta">
+            <span class="pet-chip price">₹${Number(pet.price).toLocaleString('en-IN')}</span>
+          </div>
+          <div>${verifyBadgeHTML(pet.id)}</div>
+          <div class="listing-actions">
+            <button class="lock-btn view-btn" data-id="${pet.id}">View ${pet.name}</button>
+            <button class="save-toggle${saved ? ' saved' : ''}" data-id="${pet.id}"${sold ? ' disabled' : ''}>${saved ? '❤️ Saved' : '❤️ Save'}</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderLegend(){
+    if (typeof DeltaVerify === 'undefined') return; // badge module not loaded — skip legend, don't break the page
+    const order = ['pending', 'review', 'moreinfo', 'approved', 'rejected'];
+    document.getElementById('verifyLegend').innerHTML = order.map(s => {
+      const m = DeltaVerify.STATUS_META[s];
+      const colorName = s === 'pending' ? 'Yellow' : s === 'review' ? 'Blue' : s === 'moreinfo' ? 'Orange' : s === 'rejected' ? 'Red' : 'Green';
+      return `<span>${m.dot} ${colorName} = ${m.label}</span>`;
+    }).join('');
+  }
+  renderLegend();
+
+  // Live-subscribe to verification statuses so badges update the
+  // instant an admin approves/rejects — no page reload needed.
+  // Guarded: if verification.js isn't on this page, pets still render normally, just without badges.
+  if (typeof DeltaVerify !== 'undefined') {
+    DeltaVerify.onAllStatuses(map => {
+      verifyStatusMap = map;
+      renderGrid();
+    });
+  }
+
+  async function renderGrid(){
+    const savedIds = await DeltaStore.getSaved();
+    grid.querySelectorAll('.pet-box').forEach(el => el.remove());
+    // Sold pets sink to the bottom so active listings stay front and center.
+    const sortedPets = [...allPets].sort((a, b) => (isPetSold(a) ? 1 : 0) - (isPetSold(b) ? 1 : 0));
+    grid.insertAdjacentHTML('afterbegin', sortedPets.map(p => cardHTML(p, savedIds.includes(p.id))).join(''));
+
+    grid.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        window.location.href = `listing.html?id=${encodeURIComponent(btn.dataset.id)}`;
+      });
+    });
+    grid.querySelectorAll('.save-toggle').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const nowSaved = await DeltaStore.toggleSaved(btn.dataset.id);
+        btn.classList.toggle('saved', nowSaved);
+        btn.textContent = nowSaved ? '❤️ Saved' : '❤️ Save';
+        btn.disabled = false;
+      });
+    });
+
+    applyFilters();
+  }
+
+  /* ===== FILTER + SEARCH LOGIC ===== */
+  const filterBtns = document.querySelectorAll('.filter-chip');
+  const searchInput = document.getElementById('searchInput');
+  let activeFilter = 'all';
+
+  function applyFilters(){
+    const q = searchInput.value.trim().toLowerCase();
+    const cards = grid.querySelectorAll('.pet-box[data-type]');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const matchesType = activeFilter === 'all' || card.dataset.type === activeFilter;
+      const matchesSearch = card.dataset.name.includes(q);
+      const show = matchesType && matchesSearch;
+      card.style.display = show ? 'block' : 'none';
+      if (show) visibleCount++;
+    });
+    emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      applyFilters();
+    });
+  });
+  searchInput.addEventListener('input', applyFilters);
+
+  // Live-subscribes to Firestore: fires now, and again whenever
+  // any device (yours or a buyer's) publishes a new pet.
+  // Free-adoption listings (listingType === 'adoption') live on the
+  // Adoption Portal instead, so they're excluded from this grid.
+  DeltaStore.onListingsChange(pets => {
+    allPets = pets.filter(p => p.listingType !== 'adoption');
+    renderGrid();
+  });
+</script>
+
+</body>
+</html>
